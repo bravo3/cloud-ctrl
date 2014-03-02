@@ -3,9 +3,11 @@ namespace NovaTek\CloudCtrl\Tests\Resources;
 
 use Psr\Log\AbstractLogger;
 
+/**
+ * Dummy logger
+ */
 class Logger extends AbstractLogger
 {
-
     protected $history = '';
 
     /**
@@ -31,4 +33,5 @@ class Logger extends AbstractLogger
         return $this->history;
     }
 
-} 
+}
+ 

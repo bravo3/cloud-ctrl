@@ -15,9 +15,9 @@ class CloudServiceAwareComponent
     protected $cloud_service;
 
 
-    function __construct(CloudService $controller)
+    function __construct(CloudService $cloud_service)
     {
-        $this->cloud_service = $controller;
+        $this->cloud_service = $cloud_service;
     }
 
 

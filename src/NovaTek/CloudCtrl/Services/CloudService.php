@@ -5,12 +5,12 @@ use NovaTek\CloudCtrl\Credentials\Credential;
 use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Exceptions\UnknownProviderException;
-use NovaTek\CloudCtrl\Providers\AwsService;
-use NovaTek\CloudCtrl\Providers\AzureService;
-use NovaTek\CloudCtrl\Providers\GoogleService;
+use NovaTek\CloudCtrl\Services\Aws\AwsService;
+use NovaTek\CloudCtrl\Services\Aws\AzureService;
 use NovaTek\CloudCtrl\Services\Common\InstanceManager;
 use NovaTek\CloudCtrl\Services\Common\LoadBalancerManager;
 use NovaTek\CloudCtrl\Services\Common\ResourceManager;
+use NovaTek\CloudCtrl\Services\Google\GoogleService;
 
 
 /**
@@ -53,36 +53,35 @@ abstract class CloudService
      */
     protected $region = null;
 
+    /**
+     * @var InstanceManager
+     */
+    protected $instanceManager;
 
-    function __construct(Credential $credentials = null, $region = null)
+    /**
+     * @var ResourceManager
+     */
+    protected $resourceManager;
+
+    /**
+     * @var LoadBalancerManager
+     */
+    protected $loadBalancerManager;
+
+
+    protected function __construct(Credential $credentials = null, $region = null)
     {
         $this->setCredentials($credentials);
 
         if ($region !== null) {
             $this->region = $region;
         }
+
+        $this->createInstanceManager();
+        $this->createResourceManager();
+        $this->createLoadBalancerManager();
     }
 
-    /**
-     * Get the instance manager for this provider
-     *
-     * @return InstanceManager
-     */
-    abstract public function getInstanceManager();
-
-    /**
-     * Get the resource manager for this provider
-     *
-     * @return ResourceManager
-     */
-    abstract public function getResourceManager();
-
-    /**
-     * Get the load-balancer manager for this provider
-     *
-     * @return LoadBalancerManager
-     */
-    abstract public function getLoadBalanacerManager();
 
     // --
 
@@ -133,6 +132,51 @@ abstract class CloudService
     public function getRegion()
     {
         return $this->region;
+    }
+
+    /**
+     * Create the instance manager
+     */
+    abstract protected function createInstanceManager();
+
+    /**
+     * Get InstanceManager
+     *
+     * @return InstanceManager
+     */
+    public function getInstanceManager()
+    {
+        return $this->instanceManager;
+    }
+
+    /**
+     * Create a load balancer manager
+     */
+    abstract protected function createLoadBalancerManager();
+
+    /**
+     * Get LoadBalancerManager
+     *
+     * @return LoadBalancerManager
+     */
+    public function getLoadBalancerManager()
+    {
+        return $this->loadBalancerManager;
+    }
+
+    /**
+     * Create a resource manager to control instance resources
+     */
+    abstract protected function createResourceManager();
+
+    /**
+     * Get ResourceManager
+     *
+     * @return ResourceManager
+     */
+    public function getResourceManager()
+    {
+        return $this->resourceManager;
     }
 
 

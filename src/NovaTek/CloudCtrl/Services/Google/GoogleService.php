@@ -1,5 +1,5 @@
 <?php
-namespace NovaTek\CloudCtrl\Providers;
+namespace NovaTek\CloudCtrl\Services\Google;
 
 use NovaTek\CloudCtrl\Services\CloudService;
 

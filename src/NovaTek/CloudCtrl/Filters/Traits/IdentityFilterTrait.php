@@ -16,7 +16,7 @@ trait IdentityFilterTrait
      * Set identity list
      *
      * @param \string[] $idList
-     * @return IdentityFilterTrait
+     * @return $this
      */
     public function setIdList($idList)
     {
@@ -38,7 +38,7 @@ trait IdentityFilterTrait
      * Add an identity to the list
      *
      * @param $id
-     * @return IdentityFilterTrait
+     * @return $this
      */
     public function addId($id)
     {

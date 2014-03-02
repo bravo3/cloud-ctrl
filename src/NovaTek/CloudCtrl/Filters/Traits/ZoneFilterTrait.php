@@ -16,7 +16,7 @@ trait ZoneFilterTrait
      * Set zones
      *
      * @param \string[] $zones
-     * @return ZoneFilterTrait
+     * @return $this
      */
     public function setZoneList($zones)
     {
@@ -38,7 +38,7 @@ trait ZoneFilterTrait
      * Add a zone to the list
      *
      * @param $zone
-     * @return ZoneFilterTrait
+     * @return $this
      */
     public function addZone($zone)
     {

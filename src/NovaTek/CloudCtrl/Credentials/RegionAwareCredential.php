@@ -24,7 +24,7 @@ class RegionAwareCredential extends Credential
      * Set Region
      *
      * @param string $region
-     * @return RegionAwareCredential
+     * @return $this
      */
     public function setRegion($region)
     {

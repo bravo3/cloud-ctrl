@@ -16,7 +16,7 @@ trait InstanceSizeFilterTrait
      * Set SizeList
      *
      * @param \string[] $sizeList
-     * @return InstanceSizeFilterTrait
+     * @return $this
      */
     public function setSizeList($sizeList)
     {
@@ -38,7 +38,7 @@ trait InstanceSizeFilterTrait
      * Add an instance size to the list
      *
      * @param $size
-     * @return InstanceSizeFilterTrait
+     * @return $this
      */
     public function addSize($size)
     {

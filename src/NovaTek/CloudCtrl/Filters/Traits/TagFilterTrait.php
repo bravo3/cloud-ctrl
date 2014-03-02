@@ -16,7 +16,7 @@ trait TagFilterTrait
      * Set tags
      *
      * @param array $tags
-     * @return TagFilterTrait
+     * @return $this
      */
     public function setTags($tags)
     {
@@ -39,7 +39,7 @@ trait TagFilterTrait
      *
      * @param $key
      * @param $value
-     * @return TagFilterTrait
+     * @return $this
      */
     public function addTag($key, $value)
     {

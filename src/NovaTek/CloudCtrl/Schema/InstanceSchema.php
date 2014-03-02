@@ -2,11 +2,14 @@
 namespace NovaTek\CloudCtrl\Schema;
 
 use NovaTek\CloudCtrl\Entity\Zone;
+use NovaTek\CloudCtrl\Enum\Tenancy;
+use NovaTek\CloudCtrl\Exceptions\InvalidValueException;
 
 /**
  * Instance definition for constructing instances
  *
- * $baseImage, $zones, $size, $tags, $keyPairs, $securityGroup
+ * TODO: consider UserData - this might not be consistent, but is probably important
+ *       get through all major providers before considering this
  */
 class InstanceSchema
 {
@@ -16,7 +19,7 @@ class InstanceSchema
      *
      * @var string
      */
-    protected $template_image_id;
+    protected $template_image_id = null;
 
     /**
      * List of zones to launch the instances evenly across
@@ -42,16 +45,21 @@ class InstanceSchema
     /**
      * TODO: de-AWS the terminology
      *
-     * @var string[]
+     * @var string
      */
-    protected $key_pairs = [];
+    protected $key_name = null;
 
     /**
      * TODO: de-AWS the terminology
      *
      * @var string
      */
-    protected $security_group;
+    protected $security_groups = [];
+
+    /**
+     * @var string
+     */
+    protected $tenancy = Tenancy::VPC;
 
     // --
 
@@ -59,7 +67,7 @@ class InstanceSchema
      * Set InstanceSize
      *
      * @param string $instance_size
-     * @return InstanceSchema
+     * @return $this
      */
     public function setInstanceSize($instance_size)
     {
@@ -78,67 +86,66 @@ class InstanceSchema
     }
 
     /**
-     * Set KeyPairs
+     * Set key-pair name
      *
-     * @param string[] $key_pairs
-     * @return InstanceSchema
+     * @param string $key_name
+     * @return $this
      */
-    public function setKeyPairs($key_pairs)
+    public function setKeyName($key_name)
     {
-        $this->key_pairs = $key_pairs;
+        $this->key_name = $key_name;
         return $this;
     }
 
     /**
-     * Get KeyPairs
-     *
-     * @return array
-     */
-    public function getKeyPairs()
-    {
-        return $this->key_pairs;
-    }
-
-
-    /**
-     * Add a key-pair
-     *
-     * @param string $key_pair
-     * @return InstanceSchema
-     */
-    public function addKeyPair($key_pair)
-    {
-        $this->key_pairs[] = $key_pair;
-        return $this;
-    }
-
-    /**
-     * Set SecurityGroup
-     *
-     * @param string $security_group
-     * @return InstanceSchema
-     */
-    public function setSecurityGroup($security_group)
-    {
-        $this->security_group = $security_group;
-        return $this;
-    }
-
-    /**
-     * Get SecurityGroup
+     * Get key-pair name
      *
      * @return string
      */
-    public function getSecurityGroup()
+    public function getKeyName()
     {
-        return $this->security_group;
+        return $this->key_name;
+    }
+
+    /**
+     * Set security group ID list
+     *
+     * @param string $security_groups[]
+     * @return $this
+     */
+    public function setSecurityGroups($security_groups)
+    {
+        $this->security_groups = $security_groups;
+        return $this;
+    }
+
+    /**
+     * Get all security group IDs
+     *
+     * @return string[]
+     */
+    public function getSecurityGroups()
+    {
+        return $this->security_groups;
+    }
+
+    /**
+     * Add a security group
+     *
+     * @param $id
+     * @return $this
+     */
+    public function addSecurityGroup($id)
+    {
+        $this->security_groups[] = $id;
+        return $this;
     }
 
     /**
      * Set Tags
      *
      * @param array $tags
-     * @return InstanceSchema
+     * @return $this
      */
     public function setTags($tags)
     {
@@ -161,7 +168,7 @@ class InstanceSchema
      *
      * @param $key
      * @param $value
-     * @return InstanceSchema
+     * @return $this
      */
     public function addTag($key, $value)
     {
@@ -173,7 +180,7 @@ class InstanceSchema
      * Set the base image ID that is to be used as the template
      *
      * @param string $template_image_id
-     * @return InstanceSchema
+     * @return $this
      */
     public function setTemplateImageId($template_image_id)
     {
@@ -195,7 +202,7 @@ class InstanceSchema
      * Set Zones
      *
      * @param Zone[] $zones
-     * @return InstanceSchema
+     * @return $this
      */
     public function setZones($zones)
     {
@@ -217,13 +224,42 @@ class InstanceSchema
      * Add a zone
      *
      * @param Zone $zone
-     * @return InstanceSchema
+     * @return $this
      */
     public function addZone(Zone $zone)
     {
         $this->zones[] = $zone;
         return $this;
     }
+
+    /**
+     * Set Tenancy
+     *
+     * @param string $tenancy
+     * @return $this
+     * @throws InvalidValueException
+     */
+    public function setTenancy($tenancy)
+    {
+        if (!in_array($tenancy, Tenancy::getValidTenancyTypes())) {
+            throw new InvalidValueException();
+        }
+
+        $this->tenancy = $tenancy;
+        return $this;
+    }
+
+    /**
+     * Get Tenancy
+     *
+     * @return string
+     */
+    public function getTenancy()
+    {
+        return $this->tenancy;
+    }
+
+
 
 }
  

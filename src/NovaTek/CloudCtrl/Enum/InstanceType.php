@@ -13,7 +13,7 @@ class InstanceType
     /**
      * Get a list of all valid instance types
      *
-     * @return array
+     * @return string[]
      */
     public static function getValidInstanceTypes() {
         return [self::ONDEMAND, self::SPOT, self::RESERVED];

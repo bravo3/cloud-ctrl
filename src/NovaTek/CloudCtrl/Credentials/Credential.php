@@ -32,7 +32,7 @@ class Credential
     /**
      * Set Identity
      *
-     * @param string $identity
+     * @param $this $identity
      * @return Credential
      */
     public function setIdentity($identity)
@@ -55,7 +55,7 @@ class Credential
      * Set Secret
      *
      * @param string $secret
-     * @return Credential
+     * @return $this
      */
     public function setSecret($secret)
     {

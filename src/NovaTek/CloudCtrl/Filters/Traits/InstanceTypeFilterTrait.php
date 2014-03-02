@@ -19,7 +19,7 @@ trait InstanceTypeFilterTrait
      * Set TypeList
      *
      * @param \string[] $typeList
-     * @return InstanceTypeFilterTrait
+     * @return $this
      */
     public function setTypeList($typeList)
     {
@@ -41,7 +41,7 @@ trait InstanceTypeFilterTrait
      * Add an instance type to the list
      *
      * @param $type
-     * @return InstanceTypeFilterTrait
+     * @return $this
      */
     public function addType($type)
     {

@@ -20,7 +20,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
     public function testInvalidCredentials()
     {
         $credentials =
-            new RegionAwareCredential(\properties::$aws_access_key, \properties::$aws_secret.'xxx', Region::US_EAST_1);
+            new RegionAwareCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
 
         $service = CloudService::createCloudService(Provider::AWS, $credentials);
         $this->assertTrue($service instanceof AwsService);

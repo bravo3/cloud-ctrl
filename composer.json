@@ -1,7 +1,7 @@
 {
   "name": "novatek/cloud-controller",
   "type": "library",
-  "description": "A library to control cloud resouces on AWS, Google Cloud and Windows Azure",
+  "description": "A library to control cloud resources on AWS, Google Cloud and Windows Azure",
   "keywords": ["cloud", "aws", "google cloud", "azure"],
   "license": "MIT",
   "authors": [

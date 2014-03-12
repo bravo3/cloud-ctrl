@@ -29,7 +29,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($im instanceof GoogleInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2');
+        $schema->setInstanceSize('f1-micro')->setTemplateImageId('debian-7-wheezy-v20131120');
 
         $r = $im->setDryMode(true)->createInstances(1, $schema);
         var_dump($r);

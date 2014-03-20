@@ -1,10 +1,11 @@
 <?php
-namespace NovaTek\CloudCtrl\Entity;
+namespace NovaTek\CloudCtrl\Interfaces\Instance;
+
 
 /**
  * Represents an instance
  */
-class Instance
+abstract class AbstractInstance implements InstanceInterface
 {
 
     /**

@@ -2,7 +2,7 @@
 namespace NovaTek\CloudCtrl\Tests\Credentials;
 
 use Aws\Common\Enum\Region;
-use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
+use NovaTek\CloudCtrl\Tests\Resources\TestRegionAwareCredential;
 
 class RegionAwareCredentialTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +14,7 @@ class RegionAwareCredentialTest extends \PHPUnit_Framework_TestCase
      */
     public function testProperties()
     {
-        $credential = new RegionAwareCredential();
+        $credential = new TestRegionAwareCredential();
         $this->assertNull($credential->getIdentity());
         $this->assertNull($credential->getSecret());
         $this->assertNull($credential->getRegion());

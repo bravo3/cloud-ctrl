@@ -2,7 +2,7 @@
 namespace NovaTek\CloudCtrl\Tests\Services\Aws;
 
 use Aws\Common\Enum\Region;
-use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
+use NovaTek\CloudCtrl\Entity\Aws\AwsCredential;
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Schema\InstanceSchema;
 use NovaTek\CloudCtrl\Services\Aws\AwsInstanceManager;
@@ -19,8 +19,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidCredentials()
     {
-        $credentials =
-            new RegionAwareCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
+        $credentials = new AwsCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
 
         $service = CloudService::createCloudService(Provider::AWS, $credentials);
         $this->assertTrue($service instanceof AwsService);
@@ -45,8 +44,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInstances()
     {
-        $credentials =
-            new RegionAwareCredential(\properties::$aws_access_key, \properties::$aws_secret, Region::US_EAST_1);
+        $credentials = new AwsCredential(\properties::$aws_access_key, \properties::$aws_secret, Region::US_EAST_1);
 
         $service = CloudService::createCloudService(Provider::AWS, $credentials);
         $this->assertTrue($service instanceof AwsService);

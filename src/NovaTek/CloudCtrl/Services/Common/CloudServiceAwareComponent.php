@@ -6,7 +6,7 @@ use NovaTek\CloudCtrl\Services\CloudService;
 /**
  * 
  */
-class CloudServiceAwareComponent
+abstract class CloudServiceAwareComponent
 {
 
     /**

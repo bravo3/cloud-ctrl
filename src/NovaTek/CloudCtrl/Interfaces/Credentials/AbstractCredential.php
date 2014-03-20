@@ -1,10 +1,10 @@
 <?php
-namespace NovaTek\CloudCtrl\Credentials;
+namespace NovaTek\CloudCtrl\Interfaces\Credentials;
 
 /**
  * Credentials for connection to a cloud provider
  */
-class Credential
+abstract class AbstractCredential implements CredentialInterface
 {
     /**
      * Equiv 'username' or 'client ID'
@@ -33,7 +33,7 @@ class Credential
      * Set Identity
      *
      * @param $this $identity
-     * @return Credential
+     * @return AbstractCredential
      */
     public function setIdentity($identity)
     {

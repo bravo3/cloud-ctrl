@@ -1,10 +1,11 @@
 <?php
 namespace NovaTek\CloudCtrl\Services;
 
-use NovaTek\CloudCtrl\Credentials\Credential;
-use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
+
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Exceptions\UnknownProviderException;
+use NovaTek\CloudCtrl\Interfaces\Common\RegionAwareInterface;
+use NovaTek\CloudCtrl\Interfaces\Credentials\CredentialInterface;
 use NovaTek\CloudCtrl\Services\Aws\AwsService;
 use NovaTek\CloudCtrl\Services\Aws\AzureService;
 use NovaTek\CloudCtrl\Services\Common\InstanceManager;
@@ -22,13 +23,13 @@ abstract class CloudService
     /**
      * Create a new CloudService for the given provider
      *
-     * @param string     $provider
-     * @param Credential $credentials
-     * @param string     $region
+     * @param string              $provider
+     * @param CredentialInterface $credentials
+     * @param string              $region
      * @return CloudService
      * @throws UnknownProviderException
      */
-    public static function createCloudService($provider, Credential $credentials, $region = null)
+    public static function createCloudService($provider, CredentialInterface $credentials, $region = null)
     {
         switch ($provider) {
             case Provider::AWS:
@@ -44,7 +45,7 @@ abstract class CloudService
     }
 
     /**
-     * @var Credential
+     * @var CredentialInterface
      */
     protected $credentials;
 
@@ -69,7 +70,7 @@ abstract class CloudService
     protected $loadBalancerManager;
 
 
-    protected function __construct(Credential $credentials = null, $region = null)
+    protected function __construct(CredentialInterface $credentials = null, $region = null)
     {
         $this->setCredentials($credentials);
 
@@ -88,14 +89,14 @@ abstract class CloudService
     /**
      * Set Credentials
      *
-     * @param Credential $credentials
+     * @param CredentialInterface $credentials
      * @return CloudService
      */
-    public function setCredentials(Credential $credentials)
+    public function setCredentials(CredentialInterface $credentials)
     {
         $this->credentials = $credentials;
 
-        if ($this->credentials instanceof RegionAwareCredential) {
+        if ($this->credentials instanceof RegionAwareInterface) {
             $this->setRegion($this->credentials->getRegion());
         }
 
@@ -105,7 +106,7 @@ abstract class CloudService
     /**
      * Get Credentials
      *
-     * @return Credential
+     * @return CredentialInterface
      */
     public function getCredentials()
     {

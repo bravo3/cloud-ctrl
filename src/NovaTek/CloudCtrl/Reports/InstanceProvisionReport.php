@@ -1,7 +1,7 @@
 <?php
 namespace NovaTek\CloudCtrl\Reports;
 
-use NovaTek\CloudCtrl\Entity\Instance;
+use NovaTek\CloudCtrl\Interfaces\Instance\InstanceInterface;
 use NovaTek\CloudCtrl\Reports\Traits\RawTrait;
 use NovaTek\CloudCtrl\Reports\Traits\ReceiptTrait;
 use NovaTek\CloudCtrl\Reports\Traits\SuccessTrait;
@@ -16,14 +16,14 @@ class InstanceProvisionReport
     use RawTrait;
 
     /**
-     * @var Instance[]
+     * @var InstanceInterface[]
      */
     protected $instances = [];
 
     /**
      * Set Instances
      *
-     * @param Instance[] $instances
+     * @param InstanceInterface[] $instances
      * @return InstanceProvisionReport
      */
     public function setInstances($instances)
@@ -35,7 +35,7 @@ class InstanceProvisionReport
     /**
      * Get Instances
      *
-     * @return Instance[]
+     * @return InstanceInterface[]
      */
     public function getInstances()
     {
@@ -45,10 +45,10 @@ class InstanceProvisionReport
     /**
      * Add an instance to the result stack
      *
-     * @param Instance $instance
+     * @param InstanceInterface $instance
      * @return InstanceProvisionReport
      */
-    public function addInstance(Instance $instance)
+    public function addInstance(InstanceInterface $instance)
     {
         $this->instances[] = $instance;
         return $this;

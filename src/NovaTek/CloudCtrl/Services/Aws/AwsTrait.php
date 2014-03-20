@@ -2,7 +2,6 @@
 namespace NovaTek\CloudCtrl\Services\Aws;
 
 use Aws\Common\Aws;
-use NovaTek\CloudCtrl\Services\CloudService;
 
 /**
  * Amazon-specific common service functionality
@@ -42,10 +41,13 @@ trait AwsTrait
      */
     protected function createAwsService()
     {
+        /** @var $cloud_service \NovaTek\CloudCtrl\Services\CloudService */
+        $cloud_service = $this->getCloudService();
+
         $config    = [
-            'key'    => $this->getCloudService()->getCredentials()->getIdentity(),
-            'secret' => $this->getCloudService()->getCredentials()->getSecret(),
-            'region' => $this->getCloudService()->getRegion()
+            'key'    => $cloud_service->getCredentials()->getIdentity(),
+            'secret' => $cloud_service->getCredentials()->getSecret(),
+            'region' => $cloud_service->getRegion()
         ];
         $this->aws = Aws::factory($config);
     }
@@ -53,8 +55,9 @@ trait AwsTrait
 
     /**
      * Get cloud service
-     * Should be implemented by CloudServiceAwareComponent
+     * Should be implemented by
      *
+     * @see \NovaTek\CloudCtrl\Services\CloudService
      * @return $this
      */
     abstract public function getCloudService();

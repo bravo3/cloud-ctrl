@@ -1,10 +1,10 @@
 <?php
-namespace NovaTek\CloudCtrl\Credentials;
+namespace NovaTek\CloudCtrl\Interfaces\Credentials;
 
 /**
  * Credentials for connection to a cloud provider
  */
-class RegionAwareCredential extends Credential
+class AbstractRegionAwareCredential extends AbstractCredential implements RegionAwareCredentialInterface
 {
     /**
      * @var string

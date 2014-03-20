@@ -2,6 +2,7 @@
 namespace NovaTek\CloudCtrl\Tests\Services\Google;
 
 use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
+use NovaTek\CloudCtrl\Entity\Google\GoogleCredential;
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Schema\InstanceSchema;
 use NovaTek\CloudCtrl\Services\CloudService;
@@ -18,8 +19,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInstances()
     {
-        $credentials =
-            new RegionAwareCredential(\properties::$aws_access_key, \properties::$aws_secret, '');
+        $credentials = new GoogleCredential(\properties::$aws_access_key, \properties::$aws_secret, '');
 
         $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
         $this->assertTrue($service instanceof GoogleService);

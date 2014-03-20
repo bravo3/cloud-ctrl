@@ -2,6 +2,7 @@
 namespace NovaTek\CloudCtrl\Tests\Services;
 
 use NovaTek\CloudCtrl\Credentials\RegionAwareCredential;
+use NovaTek\CloudCtrl\Entity\Aws\AwsCredential;
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Services\Aws\AwsService;
 use NovaTek\CloudCtrl\Services\CloudService;
@@ -15,7 +16,7 @@ class CloudServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testServiceFactory()
     {
-        $service = CloudService::createCloudService(Provider::AWS, new RegionAwareCredential());
+        $service = CloudService::createCloudService(Provider::AWS, new AwsCredential());
         $this->assertTrue($service instanceof AwsService);
         $this->assertTrue($service->getInstanceManager() instanceof InstanceManager);
     }

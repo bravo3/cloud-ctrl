@@ -1,7 +1,8 @@
 <?php
 namespace NovaTek\CloudCtrl\Tests\Credentials;
 
-use NovaTek\CloudCtrl\Credentials\Credential;
+
+use NovaTek\CloudCtrl\Tests\Resources\TestCredential;
 
 class CredentialTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,7 @@ class CredentialTest extends \PHPUnit_Framework_TestCase
      */
     public function testProperties()
     {
-        $credential = new Credential();
+        $credential = new TestCredential();
         $this->assertNull($credential->getIdentity());
         $this->assertNull($credential->getSecret());
 

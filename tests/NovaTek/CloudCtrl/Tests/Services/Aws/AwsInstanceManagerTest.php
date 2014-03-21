@@ -3,6 +3,7 @@ namespace NovaTek\CloudCtrl\Tests\Services\Aws;
 
 use Aws\Common\Enum\Region;
 use NovaTek\CloudCtrl\Entity\Aws\AwsCredential;
+use NovaTek\CloudCtrl\Entity\Common\GenericZone;
 use NovaTek\CloudCtrl\Enum\Provider;
 use NovaTek\CloudCtrl\Schema\InstanceSchema;
 use NovaTek\CloudCtrl\Services\Aws\AwsInstanceManager;
@@ -54,7 +55,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($im instanceof AwsInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2');
+        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2')->addZone(new GenericZone('us-east-1a'));
 
         $r = $im->setDryMode(true)->createInstances(1, $schema);
 

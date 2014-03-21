@@ -50,7 +50,7 @@ class AwsInstanceManager extends InstanceManager
         if (count($schema->getZones())) {
             // TODO: we want to evenly spread across zones - AWS doesn't do this easily
             // FIXME: fixed to first option for now
-            $placement['AvailabilityZone'] = $schema->getZones()[0];
+            $placement['AvailabilityZone'] = $schema->getZones()[0]->getZoneName();
         }
 
         // API params

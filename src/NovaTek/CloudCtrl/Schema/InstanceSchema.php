@@ -1,9 +1,9 @@
 <?php
 namespace NovaTek\CloudCtrl\Schema;
 
-use NovaTek\CloudCtrl\Entities\Zone\ZoneInterface;
 use NovaTek\CloudCtrl\Enum\Tenancy;
 use NovaTek\CloudCtrl\Exceptions\InvalidValueException;
+use NovaTek\CloudCtrl\Interfaces\Zone\ZoneInterface;
 
 /**
  * Instance definition for constructing instances
@@ -201,7 +201,7 @@ class InstanceSchema
     /**
      * Set Zones
      *
-     * @param Zone[] $zones
+     * @param ZoneInterface[] $zones
      * @return $this
      */
     public function setZones($zones)

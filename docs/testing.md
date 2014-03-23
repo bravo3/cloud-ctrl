@@ -22,3 +22,7 @@ Using your own AWS/Google accounts, make it look something like this -
         public static $google_service_account_name = '958133329576-jrit03r724s4er57ujalqrac6cb264oe@developer.gserviceaccount.com';
         public static $google_project_id = 'php-cloud-controller';
     }
+
+For Google, you will need to put the private key you are provided here:
+
+    tests/Bravo3/CloudCtrl/Tests/Resources/privatekey.p12

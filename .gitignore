@@ -4,3 +4,4 @@
 /bin/
 /coverage/
 /tests/properties.php
+/tests/Bravo3/CloudCtrl/Tests/Resources/privatekey.p12

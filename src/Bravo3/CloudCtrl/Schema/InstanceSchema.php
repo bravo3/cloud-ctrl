@@ -3,6 +3,7 @@ namespace Bravo3\CloudCtrl\Schema;
 
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
+use Bravo3\CloudCtrl\Interfaces\Instance\InstanceNameGeneratorInterface;
 use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
 
 /**
@@ -60,6 +61,11 @@ class InstanceSchema
      * @var string
      */
     protected $tenancy = Tenancy::VPC;
+
+    /**
+     * @var InstanceNameGeneratorInterface
+     */
+    protected $name_generator = null;
 
     // --
 
@@ -257,6 +263,28 @@ class InstanceSchema
     public function getTenancy()
     {
         return $this->tenancy;
+    }
+
+    /**
+     * Set the instance name generator
+     *
+     * @param InstanceNameGeneratorInterface $name_generator
+     * @return $this
+     */
+    public function setNameGenerator($name_generator)
+    {
+        $this->name_generator = $name_generator;
+        return $this;
+    }
+
+    /**
+     * Get the instance name generator
+     *
+     * @return InstanceNameGeneratorInterface
+     */
+    public function getNameGenerator()
+    {
+        return $this->name_generator;
     }
 
 

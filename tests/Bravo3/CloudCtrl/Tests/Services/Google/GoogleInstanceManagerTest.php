@@ -1,7 +1,6 @@
 <?php
 namespace Bravo3\CloudCtrl\Tests\Services\Google;
 
-use Bravo3\CloudCtrl\Credentials\RegionAwareCredential;
 use Bravo3\CloudCtrl\Entity\Common\GenericZone;
 use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
 use Bravo3\CloudCtrl\Enum\Provider;
@@ -16,17 +15,19 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
     const APPLICATION_NAME = 'CloudCtrl Tests';
 
 
+    protected function getCredentials() {
+        return new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
+            __DIR__.'/../../Resources/privatekey.p12', \properties::$google_project_id, self::APPLICATION_NAME);
+    }
+
+
     /**
      * @medium
      * @group live
      */
     public function testCreateInstances()
     {
-        $this->markTestSkipped();   // come back to this one
-
-        $credentials = new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
-            __DIR__.'/../../Resources/privatekey.p12', \properties::$google_project_id, self::APPLICATION_NAME);
-
+        $credentials = $this->getCredentials();
         $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
         $this->assertTrue($service instanceof GoogleService);
 
@@ -41,8 +42,6 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 
         $r = $im->setDryMode(true)->createInstances(1, $schema);
         var_dump($r);
-
-
     }
 
 
@@ -52,9 +51,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testDescribeInstances()
     {
-        $credentials = new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
-            __DIR__.'/../../Resources/privatekey.p12', \properties::$google_project_id, self::APPLICATION_NAME);
-
+        $credentials = $this->getCredentials();
         $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
         $this->assertTrue($service instanceof GoogleService);
 

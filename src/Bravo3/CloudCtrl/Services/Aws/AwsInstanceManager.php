@@ -119,6 +119,11 @@ class AwsInstanceManager extends InstanceManager
         // TODO: Implement terminateInstances() method.
     }
 
+    public function restartInstances(InstanceFilter $instances)
+    {
+        // TODO: Implement restartInstances() method.
+    }
+
     public function describeInstances(InstanceFilter $instances)
     {
         // TODO: Implement describeInstances() method.

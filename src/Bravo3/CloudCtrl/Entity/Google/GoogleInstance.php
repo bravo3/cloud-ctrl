@@ -7,6 +7,8 @@ use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Interfaces\Instance\AbstractInstance;
 use Bravo3\CloudCtrl\Interfaces\Instance\NamedInstanceInterface;
 use Bravo3\CloudCtrl\Interfaces\Instance\NamedInstanceTrait;
+use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
+use Bravo3\CloudCtrl\Schema\InstanceSchema;
 
 class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
 {
@@ -41,7 +43,7 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
         $instance = new self();
 
         $instance->setInstanceName($template->getName());
-        $instance->setInstanceId($template->getName());
+        $instance->setInstanceId($template->getId());
         $instance->setLink($template->getSelfLink());
         $instance->setZone(new GenericZone($template->getZone()));
 
@@ -53,6 +55,47 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
             default:
                 $instance->setInstanceState(InstanceState::UNKNOWN);
 
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Create a new Google_Service_Compute_Instance from an InstanceSchema object
+     *
+     * TODO: complete me
+     *
+     * @param InstanceSchema $schema
+     * @param string         $instance_name
+     * @param ZoneInterface  $zone
+     * @return \Google_Service_Compute_Instance
+     */
+    public static function toGoogleServiceComputeInstance(
+        InstanceSchema $schema,
+        $instance_name,
+        ZoneInterface $zone = null
+    ) {
+        $instance = new \Google_Service_Compute_Instance();
+
+        $instance->setName($instance_name);
+        if ($zone) {
+            $instance->setZone($zone->getZoneName());
+        } else {
+            $zones = $schema->getZones();
+            if (count($zones)) {
+                $instance->setZone($zones[0]->getZoneName());
+            }
+        }
+
+        $tags = $schema->getTags();
+        if (count($tags)) {
+            $google_tag_collection = new \Google_Service_Compute_Tags();
+
+            foreach ($tags as $tag) {
+
+            }
+
+            $instance->setTags($google_tag_collection);
         }
 
         return $instance;
@@ -81,5 +124,4 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
     }
 
 
-
-} 
+}

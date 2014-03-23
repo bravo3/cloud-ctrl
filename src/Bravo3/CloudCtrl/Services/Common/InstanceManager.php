@@ -24,6 +24,8 @@ abstract class InstanceManager extends CloudServiceAwareComponent
 
     abstract public function stopInstances(InstanceFilter $instances);
 
+    abstract public function restartInstances(InstanceFilter $instances);
+
     abstract public function terminateInstances(InstanceFilter $instances);
 
     abstract public function describeInstances(InstanceFilter $instances);

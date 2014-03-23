@@ -8,10 +8,12 @@ use Bravo3\CloudCtrl\Enum\Google\Scope;
 use Bravo3\CloudCtrl\Exceptions\InvalidCredentialsException;
 use Bravo3\CloudCtrl\Exceptions\UnexpectedResultException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
+use Bravo3\CloudCtrl\Interfaces\Instance\InstanceNameGeneratorInterface;
 use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
+use Bravo3\CloudCtrl\Services\Common\UniqueInstanceNameGenerator;
 
 /**
  *
@@ -36,11 +38,29 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         $client = $this->getClient([Scope::COMPUTE_WRITE], $credentials);
         $service = new \Google_Service_Compute($client);
 
-        $out = $service->instances->listInstances($credentials->getProjectId(), $schema->getZones()[0]->getZoneName());
+        $zones = $schema->getZones();
+        $zoneCount = count($zones);
+
+        // We need to spawn each instance 1 at a time, iterate through the count, picking the next sequential zone
+        $name_generator = $schema->getNameGenerator();
+        if (is_null($name_generator)) {
+            $name_generator = new UniqueInstanceNameGenerator();
+        }
+
+        $report = new InstanceProvisionReport();
+
+        for ($i = 0; $i < $count; $i++) {
+            $zone = $zones[$i % $zoneCount];
+            $name = $name_generator->getInstanceName($schema, $zone, $i);
+
+            // TODO: complete below
+            $spec = GoogleInstance::toGoogleServiceComputeInstance($schema, $name, $zone->getZoneName());
+            $out = $service->instances->insert($credentials->getProjectId(), $zone->getZoneName(), $spec);
+        }
 
         $this->cacheAuthToken($client);
 
-        return $out;
+        return $report;
     }
 
     public function startInstances(InstanceFilter $instances)
@@ -57,6 +77,12 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
     {
         // TODO: Implement terminateInstances() method.
     }
+
+    public function restartInstances(InstanceFilter $instances)
+    {
+        // TODO: Implement restartInstances() method.
+    }
+
 
     /**
      * Get a list of instances

@@ -6,6 +6,6 @@
  * To override any of the default properties, duplicate this file as 'properties.php' and replace any
  * members of the TestProperties class that you wish to change
  */
-class properties extends \NovaTek\CloudCtrl\Tests\Resources\TestProperties
+class properties extends \Bravo3\CloudCtrl\Tests\Resources\TestProperties
 {
 }

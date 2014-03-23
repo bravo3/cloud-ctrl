@@ -1,5 +1,5 @@
 {
-  "name": "novatek/cloud-controller",
+  "name": "bravo3/cloud-controller",
   "type": "library",
   "description": "A library to control cloud resources on AWS, Google Cloud and Windows Azure",
   "keywords": ["cloud", "aws", "google cloud", "azure"],

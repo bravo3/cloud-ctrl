@@ -1,6 +1,10 @@
 Properties File
 ===============
 
+For integration testing, you'll need to create a copy of the properties.dist.php file and name it properties.php
+
+Using your own AWS/Google accounts, make it look something like this -
+
     <?php
 
     /**
@@ -11,10 +15,10 @@ Properties File
      */
     class properties extends \Bravo3\CloudCtrl\Tests\Resources\TestProperties
     {
-        public static $aws_access_key = 'AKIAIAQFW7BQAKOGXXCA';
-        public static $aws_secret = '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';
+        public static $aws_access_key = 'AKIAIFQFZ7BAAKOGXXCA';
+        public static $aws_secret = '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';
 
-        public static $google_client_id = '958633929774-jrit03r724s4er57ujvlqr4c6eb236oe.apps.googleusercontent.com';
-        public static $google_service_account_name = '958633929774-jrit03r724s4er57ujvlqr4c6eb236oe@developer.gserviceaccount.com';
+        public static $google_client_id = '958133329576-jrit03r724s4er57ujalqrac6cb264oe.apps.googleusercontent.com';
+        public static $google_service_account_name = '958133329576-jrit03r724s4er57ujalqrac6cb264oe@developer.gserviceaccount.com';
         public static $google_project_id = 'php-cloud-controller';
     }

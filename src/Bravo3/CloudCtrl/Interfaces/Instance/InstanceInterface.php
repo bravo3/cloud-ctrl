@@ -59,5 +59,22 @@ interface InstanceInterface
      * @return string
      */
     public function getProvider();
+
+    /**
+     * Set the instance state
+     *
+     * @param string $state
+     * @return $this
+     */
+    public function setInstanceState($state);
+
+    /**
+     * Get the instance state
+     *
+     * @return string
+     */
+    public function getInstanceState();
+
+
 }
  

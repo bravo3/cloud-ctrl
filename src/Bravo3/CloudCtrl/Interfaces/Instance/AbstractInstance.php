@@ -23,6 +23,11 @@ abstract class AbstractInstance implements InstanceInterface
      */
     protected $zone;
 
+    /**
+     * @var string
+     */
+    protected $state;
+
     // TODO: instance state - needs abstract enumeration
 
     // --
@@ -91,6 +96,28 @@ abstract class AbstractInstance implements InstanceInterface
     public function getZone()
     {
         return $this->zone;
+    }
+
+    /**
+     * Set the instance state
+     *
+     * @param $state
+     * @return $this
+     */
+    public function setInstanceState($state)
+    {
+        $this->state = $state;
+        return $this;
+    }
+
+    /**
+     * Get the instance state
+     *
+     * @return string
+     */
+    public function getInstanceState()
+    {
+        return $this->state;
     }
 
 

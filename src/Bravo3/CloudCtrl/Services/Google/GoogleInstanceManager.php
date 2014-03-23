@@ -3,9 +3,12 @@ namespace Bravo3\CloudCtrl\Services\Google;
 
 use Bravo3\Cache\CachingServiceInterface;
 use Bravo3\Cache\CachingServiceTrait;
-use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
+use Bravo3\CloudCtrl\Entity\Google\GoogleInstance;
+use Bravo3\CloudCtrl\Enum\Google\Scope;
 use Bravo3\CloudCtrl\Exceptions\InvalidCredentialsException;
+use Bravo3\CloudCtrl\Exceptions\UnexpectedResultException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
+use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
@@ -15,9 +18,8 @@ use Bravo3\CloudCtrl\Services\Common\InstanceManager;
  */
 class GoogleInstanceManager extends InstanceManager implements CachingServiceInterface
 {
-    use CachingServiceTrait;
+    use GoogleApiTrait;
 
-    protected $token_key = 'google_oauth_token';
 
     /**
      * Create new instances
@@ -25,53 +27,18 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
      * @param int            $count
      * @param InstanceSchema $schema
      * @return InstanceProvisionReport
+     * @throws InvalidCredentialsException
      */
     public function createInstances($count, InstanceSchema $schema)
     {
-        $credentials = $this->getCloudService()->getCredentials();
+        $credentials = $this->validateGoogleCredentials($this->getCloudService()->getCredentials());
 
-        if (!($credentials instanceof GoogleCredential)) {
-            throw new InvalidCredentialsException("Invalid credentials: expected 'GoogleCredential'");
-        }
-
-        if (!file_exists($credentials->getPrivateKeyFile())) {
-            throw new InvalidCredentialsException("Private key file does not exist: ".
-                                                  $credentials->getPrivateKeyFile());
-        }
-
-        $scope = array('https://www.googleapis.com/auth/compute');
-
-        $client = new \Google_Client();
-        $client->setApplicationName($credentials->getApplicationName());
-
-        // If we have a token saved (see below) - set it here to avoid re-requesting it
-        $token = $this->getCacheItem($this->token_key);
-        if ($token->isHit()) {
-            $client->setAccessToken($token->get());
-        }
-
-        // Load the key in PKCS 12 format
-        // - you need to download this from the Google API Console when the service account was created
-        $key = file_get_contents($credentials->getPrivateKeyFile());
-        //$private_key_password = 'notasecret'; // Not sure if this is abstracted by the Google SDK, or just not required
-
-        $client->setAssertionCredentials(
-            new \Google_Auth_AssertionCredentials($credentials->getSecret(), $scope, $key)
-        );
-        $client->setClientId($credentials->getIdentity());
+        $client = $this->getClient([Scope::COMPUTE_WRITE], $credentials);
         $service = new \Google_Service_Compute($client);
 
-        // This will generate the access token if required
         $out = $service->instances->listInstances($credentials->getProjectId(), $schema->getZones()[0]->getZoneName());
 
-        // Save token here
-        $access_token_json = $client->getAccessToken();
-        if ($access_token_json) {
-            $access_token_obj = json_decode(($access_token_json));
-            $access_token     = $access_token_obj->access_token;
-
-            $token->set($access_token, $access_token_obj->expires_in);
-        }
+        $this->cacheAuthToken($client);
 
         return $out;
     }
@@ -91,9 +58,56 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         // TODO: Implement terminateInstances() method.
     }
 
+    /**
+     * Get a list of instances
+     *
+     * @param InstanceFilter $instances
+     * @throws \Bravo3\CloudCtrl\Exceptions\UnexpectedResultException
+     * @return InstanceListReport
+     */
     public function describeInstances(InstanceFilter $instances)
     {
-        // TODO: Implement describeInstances() method.
+        $credentials = $this->validateGoogleCredentials($this->getCloudService()->getCredentials());
+
+        $client = $this->getClient([Scope::COMPUTE_READ], $credentials);
+        $service = new \Google_Service_Compute($client);
+
+        $report = new InstanceListReport();
+
+        // Query options
+        $opts = [];
+
+        $filter = $this->createOptionsFromFilter($instances);
+        if ($filter) {
+            $opts['filter'] = $filter;
+        }
+
+        // Google can only search a single zone at a time
+        foreach ($instances->getZoneList() as $zone) {
+            // Make the API call to Google -
+            $out = $service->instances->listInstances($credentials->getProjectId(), $zone->getZoneName(), $opts);
+
+            // What we're looking for must be a list of instances -
+            if (!($out instanceof \Google_Service_Compute_InstanceList)) {
+                throw new UnexpectedResultException("Server returned an unexpected result", 0, $out);
+            }
+
+            $items = $out->getItems();
+            foreach ($items as $item) {
+                // Should be an instance -
+                if (!($item instanceof \Google_Service_Compute_Instance)) {
+                    throw new UnexpectedResultException("Server returned an unexpected instance object", 0, $item);
+                }
+
+                $report->addInstance(GoogleInstance::fromGoogleServiceComputeInstance($item));
+            }
+        }
+
+        $report->setSuccess(true);
+
+        $this->cacheAuthToken($client);
+
+        return $report;
     }
 
     public function setInstanceTags($tags, InstanceFilter $instances)
@@ -101,26 +115,18 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         // TODO: Implement setInstanceTags() method.
     }
 
-    /**
-     * Set the cache key for the oauth token
-     *
-     * @param string $token_key
-     * @return $this
-     */
-    public function setTokenKey($token_key)
-    {
-        $this->token_key = $token_key;
-        return $this;
-    }
 
     /**
-     * Get the cache key for the oauth token
+     * Create a compute filter from an InstaceFilter
      *
+     * @param InstanceFilter $filter
      * @return string
      */
-    public function getTokenKey()
+    protected function createOptionsFromFilter(InstanceFilter $filter)
     {
-        return $this->token_key;
+        $out = '';
+
+        return $out;
     }
 
 

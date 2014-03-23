@@ -9,9 +9,8 @@ use Bravo3\CloudCtrl\Reports\Traits\SuccessTrait;
 /**
  * Result of a bulk instance operation
  */
-class InstanceProvisionReport
+class InstanceListReport
 {
-    use ReceiptTrait;
     use SuccessTrait;
     use RawTrait;
     use InstanceListTrait;

@@ -1,6 +1,8 @@
 <?php
 namespace Bravo3\CloudCtrl\Filters\Traits;
 
+use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
+
 /**
  * Filter by zone
  */
@@ -8,14 +10,14 @@ trait ZoneFilterTrait
 {
 
     /**
-     * @var string[]
+     * @var ZoneInterface[]
      */
     protected $zoneList = [];
 
     /**
      * Set zones
      *
-     * @param \string[] $zones
+     * @param ZoneInterface[] $zones
      * @return $this
      */
     public function setZoneList($zones)
@@ -27,7 +29,7 @@ trait ZoneFilterTrait
     /**
      * Get zones
      *
-     * @return \string[]
+     * @return ZoneInterface[]
      */
     public function getZoneList()
     {
@@ -37,10 +39,10 @@ trait ZoneFilterTrait
     /**
      * Add a zone to the list
      *
-     * @param $zone
+     * @param ZoneInterface $zone
      * @return $this
      */
-    public function addZone($zone)
+    public function addZone(ZoneInterface $zone)
     {
         $this->zoneList[] = $zone;
         return $this;

@@ -10,14 +10,27 @@ use Bravo3\CloudCtrl\Services\CloudService;
 use Bravo3\CloudCtrl\Services\Google\GoogleInstanceManager;
 use Bravo3\CloudCtrl\Services\Google\GoogleService;
 
+/**
+ * @group google
+ */
 class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const APPLICATION_NAME = 'CloudCtrl Tests';
 
+    protected function getPrivateKey() {
+        return __DIR__.'/../../Resources/privatekey.p12';
+    }
 
     protected function getCredentials() {
         return new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
-            __DIR__.'/../../Resources/privatekey.p12', \properties::$google_project_id, self::APPLICATION_NAME);
+            $this->getPrivateKey(), \properties::$google_project_id, self::APPLICATION_NAME);
+    }
+
+    public function setUp() {
+        // Skip live tests if we don't have credentials
+        if (!is_readable($this->getPrivateKey())) {
+            $this->markTestSkipped('Skipping test without a private key');
+        }
     }
 
 

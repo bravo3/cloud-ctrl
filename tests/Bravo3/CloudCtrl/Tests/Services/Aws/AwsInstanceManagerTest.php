@@ -10,6 +10,9 @@ use Bravo3\CloudCtrl\Services\Aws\AwsInstanceManager;
 use Bravo3\CloudCtrl\Services\Aws\AwsService;
 use Bravo3\CloudCtrl\Services\CloudService;
 
+/**
+ * @group aws
+ */
 class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const DRYRUN_RECEIPT = 'dry-run-only';

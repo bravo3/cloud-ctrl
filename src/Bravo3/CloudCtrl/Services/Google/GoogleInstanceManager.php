@@ -53,9 +53,15 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
             $zone = $zones[$i % $zoneCount];
             $name = $name_generator->getInstanceName($schema, $zone, $i);
 
-            // TODO: complete below
             $spec = GoogleInstance::toGoogleServiceComputeInstance($schema, $name, $zone->getZoneName());
-            $out = $service->instances->insert($credentials->getProjectId(), $zone->getZoneName(), $spec);
+            $item = $service->instances->insert($credentials->getProjectId(), $zone->getZoneName(), $spec);
+
+            // TODO: check the object type!
+            if (!($item instanceof \Google_Service_Compute_Instance)) {
+                throw new UnexpectedResultException("Server returned an unexpected instance object", 0, $item);
+            }
+
+            $report->addInstance(GoogleInstance::fromGoogleServiceComputeInstance($item));
         }
 
         $this->cacheAuthToken($client);

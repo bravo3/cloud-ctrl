@@ -90,11 +90,7 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
         $tags = $schema->getTags();
         if (count($tags)) {
             $google_tag_collection = new \Google_Service_Compute_Tags();
-
-            foreach ($tags as $tag) {
-
-            }
-
+            $google_tag_collection->setItems($tags);
             $instance->setTags($google_tag_collection);
         }
 

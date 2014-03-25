@@ -1,7 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Tests\Services\Google;
 
-use Bravo3\CloudCtrl\Entity\Common\GenericZone;
+use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
 use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
@@ -17,22 +17,26 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const APPLICATION_NAME = 'CloudCtrl Tests';
 
-    protected function getPrivateKey() {
-        return __DIR__.'/../../Resources/privatekey.p12';
+    protected function getPrivateKey()
+    {
+        return __DIR__.'/../../Resources/google-privatekey.p12';
     }
 
-    protected function getCredentials() {
+    protected function getCredentials()
+    {
         return new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
             $this->getPrivateKey(), \properties::$google_project_id, self::APPLICATION_NAME);
     }
 
-    public function setUp() {
+    public function setUp()
+    {
         // Skip live tests if we don't have credentials
         if (!is_readable($this->getPrivateKey())) {
-            $this->markTestSkipped('Skipping test without a private key');
+            $this->markTestSkipped('Skipping Google test without a private key');
+        } elseif (strlen(\properties::$google_client_id) < 35) {
+            $this->markTestSkipped('Skipping Google test without a valid client ID');
         }
     }
-
 
     /**
      * @medium
@@ -41,7 +45,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
     public function testCreateInstances()
     {
         $credentials = $this->getCredentials();
-        $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
+        $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);
         $this->assertTrue($service instanceof GoogleService);
 
         /** @var $im GoogleInstanceManager */
@@ -50,10 +54,10 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 
         $schema = new InstanceSchema();
         $schema->setInstanceSize('f1-micro')->setTemplateImageId('debian-7-wheezy-v20131120')->addZone(
-            new GenericZone('us-central1-a')
+            new Zone('us-central1-a')
         );
 
-        $r = $im->setDryMode(true)->createInstances(1, $schema);
+        $r = $im->createInstances(1, $schema);
         var_dump($r);
     }
 
@@ -65,7 +69,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
     public function testDescribeInstances()
     {
         $credentials = $this->getCredentials();
-        $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
+        $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);
         $this->assertTrue($service instanceof GoogleService);
 
         /** @var $im GoogleInstanceManager */
@@ -73,7 +77,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($im instanceof GoogleInstanceManager);
 
         $filter = new InstanceFilter();
-        $filter->addZone(new GenericZone('us-central1-a'));
+        $filter->addZone(new Zone('us-central1-a'));
 
         $r = $im->setDryMode(true)->describeInstances($filter);
         $this->assertTrue($r->getSuccess());

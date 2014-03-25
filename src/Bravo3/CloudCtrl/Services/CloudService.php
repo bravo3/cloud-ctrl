@@ -12,13 +12,17 @@ use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\LoadBalancerManager;
 use Bravo3\CloudCtrl\Services\Common\ResourceManager;
 use Bravo3\CloudCtrl\Services\Google\GoogleService;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 
 /**
  * Abstract base class for all cloud service providers
  */
-abstract class CloudService
+abstract class CloudService implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
 
     /**
      * Create a new CloudService for the given provider

@@ -1,6 +1,9 @@
 <?php
 namespace Bravo3\CloudCtrl\Interfaces\Instance;
 
+use Bravo3\CloudCtrl\Interfaces\IPAddress\IPAddressInterface;
+use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
+
 /**
  * Represents an instance
  */
@@ -23,32 +26,17 @@ interface InstanceInterface
     public function getInstanceId();
 
     /**
-     * Set Region
-     *
-     * @param string $region
-     * @return $this
-     */
-    public function setRegion($region);
-
-    /**
-     * Get Region
-     *
-     * @return string
-     */
-    public function getRegion();
-
-    /**
      * Set Zone
      *
-     * @param string $zone
+     * @param ZoneInterface $zone
      * @return $this
      */
-    public function setZone($zone);
+    public function setZone(ZoneInterface $zone);
 
     /**
      * Get Zone
      *
-     * @return string
+     * @return ZoneInterface
      */
     public function getZone();
 
@@ -74,6 +62,68 @@ interface InstanceInterface
      * @return string
      */
     public function getInstanceState();
+
+
+    /**
+     * Set Architecture
+     *
+     * @param string $architecture
+     * @return $this
+     */
+    public function setArchitecture($architecture);
+
+    /**
+     * Get Architecture
+     *
+     * @return string
+     */
+    public function getArchitecture();
+
+    /**
+     * Set the ID of the base image
+     *
+     * @param string $image_id
+     * @return $this
+     */
+    public function setImageId($image_id);
+
+    /**
+     * Get the ID of the base image
+     *
+     * @return string
+     */
+    public function getImageId();
+
+    /**
+     * Set PrivateAddress
+     *
+     * @param IPAddressInterface $private_address
+     * @return $this
+     */
+    public function setPrivateAddress($private_address);
+
+    /**
+     * Get PrivateAddress
+     *
+     * @return IPAddressInterface
+     */
+    public function getPrivateAddress();
+
+    /**
+     * Set PublicAddress
+     *
+     * @param IPAddressInterface $public_address
+     * @return $this
+     */
+    public function setPublicAddress($public_address);
+
+    /**
+     * Get PublicAddress
+     *
+     * @return IPAddressInterface
+     */
+    public function getPublicAddress();
+
 
 
 }

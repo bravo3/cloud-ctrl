@@ -32,5 +32,12 @@ interface IPAddressInterface
      */
     public function getIp6Address();
 
+    /**
+     * Get the DNS name if one exists
+     *
+     * @return string|null
+     */
+    public function getDnsName();
+
 }
  

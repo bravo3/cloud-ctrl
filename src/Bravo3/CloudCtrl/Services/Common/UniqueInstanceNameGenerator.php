@@ -27,9 +27,9 @@ class UniqueInstanceNameGenerator implements InstanceNameGeneratorInterface
      */
     public function getInstanceName(InstanceSchema $schema, ZoneInterface $zone, $sequence)
     {
-        $name = $this->prefix.uniqid('', true);
+        $name = str_replace('.', '', $this->prefix.uniqid('', true));
 
-        if ($this->include_zone) {
+        if ($this->include_zone && !is_null($zone)) {
             $name .= '-'.$zone->getZoneName();
         }
 

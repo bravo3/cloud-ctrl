@@ -1,7 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Entity\Google;
 
-use Bravo3\CloudCtrl\Entity\Common\GenericZone;
+use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Enum\InstanceState;
 use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Interfaces\Instance\AbstractInstance;
@@ -45,7 +45,7 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
         $instance->setInstanceName($template->getName());
         $instance->setInstanceId($template->getId());
         $instance->setLink($template->getSelfLink());
-        $instance->setZone(new GenericZone($template->getZone()));
+        $instance->setZone(new Zone($template->getZone()));
 
         switch ($template->getStatus()) {
             case 'RUNNING':

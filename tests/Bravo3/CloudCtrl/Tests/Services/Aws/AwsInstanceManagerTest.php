@@ -3,7 +3,7 @@ namespace Bravo3\CloudCtrl\Tests\Services\Aws;
 
 use Aws\Common\Enum\Region;
 use Bravo3\CloudCtrl\Entity\Aws\AwsCredential;
-use Bravo3\CloudCtrl\Entity\Common\GenericZone;
+use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Aws\AwsInstanceManager;
@@ -16,6 +16,12 @@ use Bravo3\CloudCtrl\Services\CloudService;
 class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const DRYRUN_RECEIPT = 'dry-run-only';
+
+    public function setUp() {
+        if (\properties::$aws_access_key == 'insert-key-here' || empty(\properties::$aws_access_key)) {
+            $this->markTestSkipped('Skipping AWS test without a valid access key');
+        }
+    }
 
     /**
      * @medium
@@ -45,6 +51,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @medium
      * @group live
+     * @group integrationx
      */
     public function testCreateInstances()
     {
@@ -58,13 +65,13 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($im instanceof AwsInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2')->addZone(new GenericZone('us-east-1b'));
+        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2')->addZone(new Zone('us-east-1b'));
 
-        $r = $im->setDryMode(true)->createInstances(1, $schema);
+        $r = $im->createInstances(1, $schema);
 
         $this->assertTrue($r->getSuccess());
         $this->assertEquals(self::DRYRUN_RECEIPT, $r->getReceipt());
-        $this->assertEquals(412, $r->getResultCode());
+        $this->assertEquals(200, $r->getResultCode());
 
 
     }

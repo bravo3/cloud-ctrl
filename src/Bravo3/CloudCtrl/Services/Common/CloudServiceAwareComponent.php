@@ -1,13 +1,17 @@
 <?php
 namespace Bravo3\CloudCtrl\Services\Common;
 
+use Bravo3\CloudCtrl\Interfaces\Common\LoggingTrait;
 use Bravo3\CloudCtrl\Services\CloudService;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
- * 
+ *
  */
-abstract class CloudServiceAwareComponent
+abstract class CloudServiceAwareComponent implements LoggerAwareInterface
 {
+    use LoggingTrait;
 
     /**
      * @var CloudService
@@ -71,7 +75,6 @@ abstract class CloudServiceAwareComponent
     {
         return $this->dry_mode;
     }
-
 
 
 }

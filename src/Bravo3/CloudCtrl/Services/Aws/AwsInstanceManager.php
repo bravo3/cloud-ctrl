@@ -3,6 +3,7 @@ namespace Bravo3\CloudCtrl\Services\Aws;
 
 use Aws\Ec2\Ec2Client;
 use Aws\Ec2\Exception\Ec2Exception;
+use Bravo3\CloudCtrl\Entity\Aws\AwsInstance;
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
@@ -17,11 +18,15 @@ class AwsInstanceManager extends InstanceManager
 {
     use AwsTrait;
 
+    const NO_NAME         = '<no name>';
+    const DRY_RUN_STATUS  = 412;
     const DRY_RUN_ERR     = "Request would have succeeded, but DryRun flag is set.";
     const DRY_RUN_RECEIPT = "dry-run-only";
 
     /**
      * Create some peeps
+     *
+     * TODO: this is getting a bit chunky - break down?
      *
      * @param int            $count
      * @param InstanceSchema $schema
@@ -45,60 +50,86 @@ class AwsInstanceManager extends InstanceManager
                 break;
         }
 
-        // Placement
-        $placement = ['Tenancy' => $tenancy];
-        if (count($schema->getZones())) {
-            // TODO: we want to evenly spread across zones - AWS doesn't do this easily
-            // FIXME: fixed to first option for now
-            $placement['AvailabilityZone'] = $schema->getZones()[0]->getZoneName();
-        }
-
-        // API params
-        $params = [
-            'DryRun'           => $this->getDryMode(),
-            'ImageId'          => $schema->getTemplateImageId(),
-            'MinCount'         => $count,
-            'MaxCount'         => $count,
-            'KeyName'          => $schema->getKeyName(),
-            'SecurityGroupIds' => $schema->getSecurityGroups(),
-            //'UserData'         => '',
-            'InstanceType'     => $schema->getInstanceSize(),
-            'Placement'        => $placement,
-        ];
-
-
         $report = new InstanceProvisionReport();
 
-        try {
-            // Run the request
-            $r = $ec2->runInstances($params);
+        $zones          = $schema->getZones();
+        $zone_count     = count($zones);
+        $single_request = $zone_count == 1;
 
-            // Gather the success report
-            $report->setRaw($r);
-            $report->setSuccess(true);
-            $report->setReceipt($r->get('ReservationId'));
-
-        } catch (Ec2Exception $e) {
-            // Gather the error report
-            $report->setResultCode($e->getResponse()->getStatusCode());
-            $report->setResultMessage($e->getMessage());
-            $report->setParentException($e);
-
-            if ($e->getResponse()->getStatusCode() == 412 && $e->getMessage() == self::DRY_RUN_ERR) {
-                // Dry-run success
-                $report->setSuccess(true);
-                $report->setReceipt(self::DRY_RUN_RECEIPT);
+        // If we have multiple zones, we need to do this 1 at a time to break up the requests
+        // If not, AWS can spawn them all at once
+        for ($i = 0; $i < ($single_request ? 1 : $count); $i++) {
+            // Placement
+            $placement = ['Tenancy' => $tenancy];
+            if ($zone_count) {
+                $zone                          = $zones[$i % $zone_count];
+                $placement['AvailabilityZone'] = $zone->getZoneName();
             } else {
-                // API failure
-                $report->setSuccess(false);
+                $zone = null;
             }
 
-        } catch (\Exception $e) {
-            // Unknown failure
-            $report->setSuccess(false);
-            $report->setResultCode($e->getCode());
-            $report->setResultMessage($e->getMessage());
-            $report->setParentException($e);
+            // API params
+            $params = [
+                'DryRun'           => $this->getDryMode(),
+                'ImageId'          => $schema->getTemplateImageId(),
+                'MinCount'         => $single_request ? $count : 1,
+                'MaxCount'         => $single_request ? $count : 1,
+                'KeyName'          => $schema->getKeyName(),
+                'SecurityGroupIds' => $schema->getSecurityGroups(),
+                //'UserData'         => '',
+                'InstanceType'     => $schema->getInstanceSize(),
+                'Placement'        => $placement,
+            ];
+
+            try {
+                // Run the request
+                $r = $ec2->runInstances($params);
+
+                // Gather the success report
+                $report->setRaw($r);
+                $report->setSuccess(true);
+                $report->setReceipt($r->get('ReservationId'));
+
+                // TODO: could be multiple
+                $instances = AwsInstance::fromApiResult($r);
+                foreach ($instances as $instance) {
+                    $this->logCreateInstance($i, $instance, self::NO_NAME);
+                }
+
+            } catch (Ec2Exception $e) {
+                // Gather the error report
+                $report->setResultCode($e->getResponse()->getStatusCode());
+                $report->setResultMessage($e->getMessage());
+                $report->setParentException($e);
+
+                if ($e->getResponse()->getStatusCode() == self::DRY_RUN_STATUS &&
+                    $e->getMessage() == self::DRY_RUN_ERR
+                ) {
+                    // Dry-run success
+                    $report->setSuccess(true);
+                    $report->setReceipt(self::DRY_RUN_RECEIPT);
+                    if ($single_request) {
+                        $this->info(
+                            "Create instance dry-run success with ".$count." instances in a single wad, zone [".
+                            $zone->getZoneName()."]"
+                        );
+                    } else {
+                        $this->info(
+                            "Create instance dry-run success in zone [".$zone->getZoneName()."]"
+                        );
+                    }
+                } else {
+                    // API failure
+                    $report->setSuccess(false);
+                }
+
+            } catch (\Exception $e) {
+                // Unknown failure
+                $report->setSuccess(false);
+                $report->setResultCode($e->getCode());
+                $report->setResultMessage($e->getMessage());
+                $report->setParentException($e);
+            }
         }
 
         return $report;

@@ -1,6 +1,8 @@
-Properties File
-===============
+Integration Testing
+===================
 
+Live Configuration
+------------------
 For integration testing, you'll need to create a copy of the properties.dist.php file and name it properties.php
 
 Using your own AWS/Google accounts, make it look something like this -
@@ -26,3 +28,9 @@ Using your own AWS/Google accounts, make it look something like this -
 For Google, you will need to put the private key you are provided here:
 
     tests/Bravo3/CloudCtrl/Tests/Resources/privatekey.p12
+
+Costly Live Tests
+-----------------
+Some tests will spin up real instances and will therefore induce actual cost. These tests are all in the group
+'integration' and are excluded by default. All other tests that require a live connection with legitimate credentials
+but do not induce costs are in the 'live' group.

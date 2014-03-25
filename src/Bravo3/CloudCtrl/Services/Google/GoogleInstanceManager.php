@@ -8,7 +8,6 @@ use Bravo3\CloudCtrl\Enum\Google\Scope;
 use Bravo3\CloudCtrl\Exceptions\InvalidCredentialsException;
 use Bravo3\CloudCtrl\Exceptions\UnexpectedResultException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
-use Bravo3\CloudCtrl\Interfaces\Instance\InstanceNameGeneratorInterface;
 use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
@@ -39,9 +38,8 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         $service = new \Google_Service_Compute($client);
 
         $zones = $schema->getZones();
-        $zoneCount = count($zones);
+        $zone_count = count($zones);
 
-        // We need to spawn each instance 1 at a time, iterate through the count, picking the next sequential zone
         $name_generator = $schema->getNameGenerator();
         if (is_null($name_generator)) {
             $name_generator = new UniqueInstanceNameGenerator();
@@ -49,19 +47,24 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
 
         $report = new InstanceProvisionReport();
 
+        // We need to spawn each instance 1 at a time, iterate through the count, picking the next sequential zone
         for ($i = 0; $i < $count; $i++) {
-            $zone = $zones[$i % $zoneCount];
+            $zone = $zones[$i % $zone_count];
             $name = $name_generator->getInstanceName($schema, $zone, $i);
 
-            $spec = GoogleInstance::toGoogleServiceComputeInstance($schema, $name, $zone->getZoneName());
+            $spec = GoogleInstance::toGoogleServiceComputeInstance($schema, $name, $zone);
             $item = $service->instances->insert($credentials->getProjectId(), $zone->getZoneName(), $spec);
+
+            var_dump($item);
 
             // TODO: check the object type!
             if (!($item instanceof \Google_Service_Compute_Instance)) {
                 throw new UnexpectedResultException("Server returned an unexpected instance object", 0, $item);
             }
 
-            $report->addInstance(GoogleInstance::fromGoogleServiceComputeInstance($item));
+            $instance = GoogleInstance::fromGoogleServiceComputeInstance($item);
+            $this->logCreateInstance($i, $instance, $name);
+            $report->addInstance($instance);
         }
 
         $this->cacheAuthToken($client);
@@ -131,7 +134,8 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
                     throw new UnexpectedResultException("Server returned an unexpected instance object", 0, $item);
                 }
 
-                $report->addInstance(GoogleInstance::fromGoogleServiceComputeInstance($item));
+                $instance = GoogleInstance::fromGoogleServiceComputeInstance($item);
+                $report->addInstance($instance);
             }
         }
 

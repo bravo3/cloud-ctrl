@@ -12,6 +12,7 @@ use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\LoadBalancerManager;
 use Bravo3\CloudCtrl\Services\Common\ResourceManager;
 use Bravo3\CloudCtrl\Services\Google\GoogleService;
+use Bravo3\NetworkProxy\NetworkProxyInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -27,21 +28,26 @@ abstract class CloudService implements LoggerAwareInterface
     /**
      * Create a new CloudService for the given provider
      *
-     * @param string              $provider
-     * @param CredentialInterface $credentials
-     * @param string              $region
-     * @return CloudService
+     * @param string                $provider
+     * @param CredentialInterface   $credentials
+     * @param string                $region
+     * @param NetworkProxyInterface $proxy
      * @throws UnknownProviderException
+     * @return CloudService
      */
-    public static function createCloudService($provider, CredentialInterface $credentials, $region = null)
-    {
+    public static function createCloudService(
+        $provider,
+        CredentialInterface $credentials,
+        $region = null,
+        NetworkProxyInterface $proxy = null
+    ) {
         switch ($provider) {
             case Provider::AWS:
-                return new AwsService($credentials, $region);
+                return new AwsService($credentials, $region, $proxy);
             case Provider::AZURE:
-                return new AzureService($credentials, $region);
+                return new AzureService($credentials, $region, $proxy);
             case Provider::GOOGLE:
-                return new GoogleService($credentials, $region);
+                return new GoogleService($credentials, $region, $proxy);
 
             default:
                 throw new UnknownProviderException();
@@ -59,6 +65,11 @@ abstract class CloudService implements LoggerAwareInterface
     protected $region = null;
 
     /**
+     * @var NetworkProxyInterface
+     */
+    protected $proxy;
+
+    /**
      * @var InstanceManager
      */
     protected $instanceManager;
@@ -74,9 +85,13 @@ abstract class CloudService implements LoggerAwareInterface
     protected $loadBalancerManager;
 
 
-    protected function __construct(CredentialInterface $credentials = null, $region = null)
-    {
+    protected function __construct(
+        CredentialInterface $credentials = null,
+        $region = null,
+        NetworkProxyInterface $proxy = null
+    ) {
         $this->setCredentials($credentials);
+        $this->setProxy($proxy);
 
         if ($region !== null) {
             $this->region = $region;
@@ -182,6 +197,28 @@ abstract class CloudService implements LoggerAwareInterface
     public function getResourceManager()
     {
         return $this->resourceManager;
+    }
+
+    /**
+     * Set Proxy
+     *
+     * @param NetworkProxyInterface $proxy
+     * @return $this
+     */
+    public function setProxy($proxy = null)
+    {
+        $this->proxy = $proxy;
+        return $this;
+    }
+
+    /**
+     * Get Proxy
+     *
+     * @return NetworkProxyInterface
+     */
+    public function getProxy()
+    {
+        return $this->proxy;
     }
 
 

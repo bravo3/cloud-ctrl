@@ -44,11 +44,31 @@ trait AwsTrait
         /** @var $cloud_service \Bravo3\CloudCtrl\Services\CloudService */
         $cloud_service = $this->getCloudService();
 
-        $config    = [
+        $config = [
             'key'    => $cloud_service->getCredentials()->getIdentity(),
             'secret' => $cloud_service->getCredentials()->getSecret(),
             'region' => $cloud_service->getRegion()
         ];
+
+        $proxy = $cloud_service->getProxy();
+        if ($proxy) {
+            // TODO: consider these:
+            //    CURLOPT_HTTPHEADER     => array("Expect:"),
+            //    CURLOPT_SSL_VERIFYPEER => false
+            // or prehaps just allow curl options in general?
+
+            $curl_ops = array(
+                CURLOPT_PROXY          => $proxy->getHostname(),
+                CURLOPT_PROXYPORT      => $proxy->getPort(),
+            );
+
+            if ($proxy->getUsername() && $proxy->getUsername()) {
+                $curl_ops[CURLOPT_PROXYUSERPWD] = $proxy->getUsername().':'.$proxy->getPassword();
+            }
+
+            $config['curl.options'] = $curl_ops;
+        }
+
         $this->aws = Aws::factory($config);
     }
 

@@ -51,7 +51,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @medium
      * @group live
-     * @group integrationx
+     * @group integration
      */
     public function testCreateInstances()
     {

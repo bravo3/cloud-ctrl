@@ -1,34 +1,38 @@
 {
-  "name": "bravo3/cloud-controller",
-  "type": "library",
-  "description": "A library to control cloud resources on AWS, Google Cloud and Windows Azure",
-  "keywords": ["cloud", "aws", "google cloud", "azure"],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Jordon Scott",
-      "email": "jordon@novatek.com.au"
-    }
-  ],
-  "autoload": {
-    "psr-0": { "": "src/" }
-  },
-  "require": {
-    "php": ">=5.4.0",
-    "psr/log": "~1.0",
-    "aws/aws-sdk-php": "~2.5",
-    "google/apiclient": "~1.0@beta"
-  },
-  "require-dev": {
-    "phpunit/phpunit": ">=4.0.0"
-  },
-  "scripts": {
-    "post-install-cmd": [
+    "name": "bravo3/cloud-controller",
+    "type": "library",
+    "description": "A library to control cloud resources on AWS, Google Cloud and Windows Azure",
+    "keywords": ["cloud", "aws", "google cloud", "azure"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jordon Scott",
+            "email": "jordon@novatek.com.au"
+        }
     ],
-    "post-update-cmd": [
-    ]
-  },
-  "config": {
-    "bin-dir": "bin"
-  }
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "psr/log": "~1.0",
+        "bravo3/cache": "~0.1",
+        "bravo3/network-proxy": "~1.0",
+        "aws/aws-sdk-php": "~2.5",
+        "google/apiclient": "~1.0@beta"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=4.0.0"
+    },
+    "scripts": {
+        "post-install-cmd": [
+        ],
+        "post-update-cmd": [
+        ]
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
 }

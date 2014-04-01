@@ -41,8 +41,9 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @medium
      * @group live
+     * @group integration
      */
-    public function testCreateInstances()
+    public function testCreateGoogleInstances()
     {
         $credentials = $this->getCredentials();
         $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);
@@ -66,7 +67,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
      * @medium
      * @group live
      */
-    public function testDescribeInstances()
+    public function testDescribeGoogleInstances()
     {
         $credentials = $this->getCredentials();
         $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);

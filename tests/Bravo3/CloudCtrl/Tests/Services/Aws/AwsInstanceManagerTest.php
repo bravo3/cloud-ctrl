@@ -27,7 +27,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      * @medium
      * @group live
      */
-    public function testInvalidCredentials()
+    public function testInvalidAwsCredentials()
     {
         $credentials = new AwsCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
 
@@ -51,9 +51,9 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @medium
      * @group live
-     * @group integrationx
+     * @group integration
      */
-    public function testCreateInstances()
+    public function testCreateAwsInstances()
     {
         $credentials = new AwsCredential(\properties::$aws_access_key, \properties::$aws_secret, Region::US_EAST_1);
 

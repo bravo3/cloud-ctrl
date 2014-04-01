@@ -15,7 +15,9 @@ use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\UniqueInstanceNameGenerator;
 
 /**
+ * Google Instance Manager
  *
+ * Responsible for handling all Google Cloud Compute instances and instance resources
  */
 class GoogleInstanceManager extends InstanceManager implements CachingServiceInterface
 {

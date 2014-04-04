@@ -21,7 +21,7 @@
         "bravo3/cache": "~0.1",
         "bravo3/network-proxy": "~1.0",
         "aws/aws-sdk-php": "~2.5",
-        "google/apiclient": "~1.0@beta"
+        "google/apiclient": "1.0.*@beta"
     },
     "require-dev": {
         "phpunit/phpunit": ">=4.0.0"

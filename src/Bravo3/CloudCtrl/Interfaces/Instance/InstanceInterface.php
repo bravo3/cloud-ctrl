@@ -1,6 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Interfaces\Instance;
 
+use Bravo3\CloudCtrl\Enum\Architecture;
 use Bravo3\CloudCtrl\Interfaces\IPAddress\IPAddressInterface;
 use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
 
@@ -67,7 +68,7 @@ interface InstanceInterface
     /**
      * Set Architecture
      *
-     * @param string $architecture
+     * @param Architecture $architecture
      * @return $this
      */
     public function setArchitecture($architecture);
@@ -75,7 +76,7 @@ interface InstanceInterface
     /**
      * Get Architecture
      *
-     * @return string
+     * @return Architecture
      */
     public function getArchitecture();
 

@@ -1,10 +1,12 @@
 <?php
 namespace Bravo3\CloudCtrl\Enum;
 
+use Eloquent\Enumeration\AbstractEnumeration;
+
 /**
  * Instance boot state
  */
-class InstanceState
+final class InstanceState extends AbstractEnumeration
 {
     const UNKNOWN    = 'UNKNOWN';
     const PENDING    = 'PENDING';

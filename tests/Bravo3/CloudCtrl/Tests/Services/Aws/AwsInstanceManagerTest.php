@@ -24,15 +24,31 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return AwsCredential
+     */
+    protected function getCredentials()
+    {
+        return new AwsCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
+    }
+
+    /**
+     * @return AwsService
+     */
+    protected function getService() {
+        $service = CloudService::createCloudService(Provider::AWS, $this->getCredentials());
+        $this->assertTrue($service instanceof AwsService);
+        $service->setProxy(\properties::getProxy());
+
+        return $service;
+    }
+
+    /**
      * @medium
      * @group live
      */
     public function testInvalidAwsCredentials()
     {
-        $credentials = new AwsCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
-
-        $service = CloudService::createCloudService(Provider::AWS, $credentials);
-        $this->assertTrue($service instanceof AwsService);
+        $service = $this->getService();
 
         /** @var $im AwsInstanceManager */
         $im = $service->getInstanceManager();
@@ -55,10 +71,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateAwsInstances()
     {
-        $credentials = new AwsCredential(\properties::$aws_access_key, \properties::$aws_secret, Region::US_EAST_1);
-
-        $service = CloudService::createCloudService(Provider::AWS, $credentials);
-        $this->assertTrue($service instanceof AwsService);
+        $service = $this->getService();
 
         /** @var $im AwsInstanceManager */
         $im = $service->getInstanceManager();

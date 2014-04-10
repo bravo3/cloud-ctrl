@@ -22,10 +22,28 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         return __DIR__.'/../../Resources/google-privatekey.p12';
     }
 
+    /**
+     * Get the credentials
+     *
+     * @return GoogleCredential
+     */
     protected function getCredentials()
     {
         return new GoogleCredential(\properties::$google_client_id, \properties::$google_service_account_name,
             $this->getPrivateKey(), \properties::$google_project_id, self::APPLICATION_NAME);
+    }
+
+    /**
+     * Get the GoogleService
+     *
+     * @return GoogleService
+     */
+    protected function getService() {
+        $service     = CloudService::createCloudService(Provider::GOOGLE, $this->getCredentials());
+        $this->assertTrue($service instanceof GoogleService);
+        $service->setProxy(\properties::getProxy());
+
+        return $service;
     }
 
     public function setUp()
@@ -45,9 +63,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateGoogleInstances()
     {
-        $credentials = $this->getCredentials();
-        $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);
-        $this->assertTrue($service instanceof GoogleService);
+        $service = $this->getService();
 
         /** @var $im GoogleInstanceManager */
         $im = $service->getInstanceManager();
@@ -62,16 +78,13 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         var_dump($r);
     }
 
-
     /**
      * @medium
      * @group live
      */
     public function testDescribeGoogleInstances()
     {
-        $credentials = $this->getCredentials();
-        $service     = CloudService::createCloudService(Provider::GOOGLE, $credentials);
-        $this->assertTrue($service instanceof GoogleService);
+        $service = $this->getService();
 
         /** @var $im GoogleInstanceManager */
         $im = $service->getInstanceManager();

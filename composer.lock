@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "19fd8fffecee979ac58151dc27e0fce5",
+    "hash": "f404586a003154e6a1d00aeb43086839",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -126,19 +126,20 @@
         },
         {
             "name": "bravo3/network-proxy",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jordonsc/network-proxy.git",
-                "reference": "eef82460f2ca7626bab70c6e295cb4aaa0ac3a98"
+                "reference": "e2ac764b0f205cf5be13978bae8cad563f185fd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jordonsc/network-proxy/zipball/eef82460f2ca7626bab70c6e295cb4aaa0ac3a98",
-                "reference": "eef82460f2ca7626bab70c6e295cb4aaa0ac3a98",
+                "url": "https://api.github.com/repos/jordonsc/network-proxy/zipball/e2ac764b0f205cf5be13978bae8cad563f185fd8",
+                "reference": "e2ac764b0f205cf5be13978bae8cad563f185fd8",
                 "shasum": ""
             },
             "require": {
+                "eloquent/enumeration": "~5.1",
                 "php": ">=5.3.3"
             },
             "require-dev": {
@@ -165,7 +166,7 @@
                 "network",
                 "proxy"
             ],
-            "time": "2014-03-30 07:13:58"
+            "time": "2014-04-09 07:27:34"
         },
         {
             "name": "eloquent/enumeration",

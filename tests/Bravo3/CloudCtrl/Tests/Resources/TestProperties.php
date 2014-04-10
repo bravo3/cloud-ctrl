@@ -14,5 +14,9 @@ class TestProperties
     public static $google_client_id = 'xxxxxx.apps.googleusercontent.com';
     public static $google_service_account_name = 'xxxxxx@developer.gserviceaccount.com';
     public static $google_project_id = 'php-cloud-controller';
+
+    public static function getProxy() {
+        return null;
+    }
 }
  

@@ -13,6 +13,8 @@ use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\UniqueInstanceNameGenerator;
+use Bravo3\NetworkProxy\Implementation\HttpProxy;
+use Bravo3\NetworkProxy\Implementation\SocksProxy;
 
 /**
  * Google Instance Manager
@@ -107,8 +109,24 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         $credentials = $this->validateGoogleCredentials($this->getCloudService()->getCredentials());
 
         $client = $this->getClient([Scope::COMPUTE_READ], $credentials);
-        $service = new \Google_Service_Compute($client);
 
+        $proxy = $this->getCloudService()->getProxy();
+        if ($proxy) {
+            $options = [CURLOPT_PROXY => $proxy->getHostname(), CURLOPT_PROXYPORT => $proxy->getPort()];
+            if ($proxy->getUsername()) {
+                $options[CURLOPT_PROXYUSERPWD] = $proxy->getUsername().':'.$proxy->getPassword();
+            }
+
+            if ($proxy instanceof HttpProxy) {
+                $options[CURLOPT_PROXYTYPE] = CURLPROXY_HTTP;
+            } elseif ($proxy instanceof SocksProxy) {
+                $options[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+
+            $client->getIo()->setOptions($options); // FIXME: BUG IN GOOGLE API HERE
+        }
+
+        $service = new \Google_Service_Compute($client);
         $report = new InstanceListReport();
 
         // Query options

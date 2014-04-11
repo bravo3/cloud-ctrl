@@ -2,6 +2,8 @@
 namespace Bravo3\CloudCtrl\Services\Aws;
 
 use Aws\Common\Aws;
+use Bravo3\NetworkProxy\Implementation\HttpProxy;
+use Bravo3\NetworkProxy\Implementation\SocksProxy;
 
 /**
  * Amazon-specific common service functionality
@@ -64,6 +66,13 @@ trait AwsTrait
 
             if ($proxy->getUsername() && $proxy->getUsername()) {
                 $curl_ops[CURLOPT_PROXYUSERPWD] = $proxy->getUsername().':'.$proxy->getPassword();
+            }
+
+            // If we have an HTTP or SOCKS proxy - tell curl which we're using
+            if ($proxy instanceof HttpProxy) {
+                $curl_ops[CURLOPT_PROXYTYPE] = CURLPROXY_HTTP;
+            } elseif ($proxy instanceof SocksProxy) {
+                $curl_ops[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
             }
 
             $config['curl.options'] = $curl_ops;

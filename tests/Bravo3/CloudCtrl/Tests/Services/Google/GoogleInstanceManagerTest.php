@@ -96,6 +96,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $r = $im->setDryMode(true)->describeInstances($filter);
         $this->assertTrue($r->getSuccess());
 
+        // TODO: need to check a real instance..
     }
 
 }

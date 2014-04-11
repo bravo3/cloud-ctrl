@@ -12,7 +12,7 @@ use Bravo3\CloudCtrl\Schema\InstanceSchema;
 class UniqueInstanceNameGenerator implements InstanceNameGeneratorInterface
 {
 
-    protected $prefix = '';
+    protected $prefix = 'i-';
     protected $suffix = '';
     protected $include_zone = false;
     protected $include_sequence = false;

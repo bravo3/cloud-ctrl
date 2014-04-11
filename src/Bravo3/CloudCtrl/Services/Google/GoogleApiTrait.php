@@ -5,6 +5,8 @@ use Bravo3\Cache\CachingServiceTrait;
 use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
 use Bravo3\CloudCtrl\Exceptions\InvalidCredentialsException;
 use Bravo3\CloudCtrl\Interfaces\Credentials\CredentialInterface;
+use Bravo3\CloudCtrl\Services\Common\CloudServiceAwareComponent;
+use Bravo3\CloudCtrl\Services\Google\Io\GoogleIo;
 
 /**
  *
@@ -28,6 +30,15 @@ trait GoogleApiTrait
         $client = new \Google_Client();
         $client->setApplicationName($credentials->getApplicationName());
 
+        $io = new GoogleIo($client);
+        $io->setTimeout(5);
+
+        if ($this instanceof CloudServiceAwareComponent) {
+            $io->setProxy($this->getCloudService()->getProxy());
+        }
+
+        $client->setIo($io);
+
         // Grab the oauth token
         $token = $this->getCacheItem($this->token_key);
         if ($token->isHit()) {
@@ -46,7 +57,6 @@ trait GoogleApiTrait
 
         return $client;
     }
-
 
     /**
      * Save the oauth token back to the caching layer after a successful request

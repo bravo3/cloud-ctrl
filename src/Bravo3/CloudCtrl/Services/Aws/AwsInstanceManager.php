@@ -75,7 +75,7 @@ class AwsInstanceManager extends InstanceManager
                 'MinCount'         => $single_request ? $count : 1,
                 'MaxCount'         => $single_request ? $count : 1,
                 'KeyName'          => $schema->getKeyName(),
-                'SecurityGroupIds' => $schema->getSecurityGroups(),
+                'SecurityGroupIds' => $schema->getFirewalls(),
                 //'UserData'         => '',
                 'InstanceType'     => $schema->getInstanceSize(),
                 'Placement'        => $placement,
@@ -90,38 +90,18 @@ class AwsInstanceManager extends InstanceManager
                 $report->setSuccess(true);
                 $report->setReceipt($r->get('ReservationId'));
 
-                // TODO: could be multiple
                 $instances = AwsInstance::fromApiResult($r);
                 foreach ($instances as $instance) {
                     $this->logCreateInstance($i, $instance, self::NO_NAME);
+                    $report->addInstance($instance);
                 }
 
             } catch (Ec2Exception $e) {
-                // Gather the error report
+                // API failure
+                $report->setSuccess(false);
                 $report->setResultCode($e->getResponse()->getStatusCode());
                 $report->setResultMessage($e->getMessage());
                 $report->setParentException($e);
-
-                if ($e->getResponse()->getStatusCode() == self::DRY_RUN_STATUS &&
-                    $e->getMessage() == self::DRY_RUN_ERR
-                ) {
-                    // Dry-run success
-                    $report->setSuccess(true);
-                    $report->setReceipt(self::DRY_RUN_RECEIPT);
-                    if ($single_request) {
-                        $this->info(
-                            "Create instance dry-run success with ".$count." instances in a single wad, zone [".
-                            $zone->getZoneName()."]"
-                        );
-                    } else {
-                        $this->info(
-                            "Create instance dry-run success in zone [".$zone->getZoneName()."]"
-                        );
-                    }
-                } else {
-                    // API failure
-                    $report->setSuccess(false);
-                }
 
             } catch (\Exception $e) {
                 // Unknown failure

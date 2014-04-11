@@ -1,6 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Reports\Traits;
 
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Interfaces\Instance\InstanceInterface;
 
 /**
@@ -8,14 +9,13 @@ use Bravo3\CloudCtrl\Interfaces\Instance\InstanceInterface;
  */
 trait InstanceListTrait
 {
-
     /**
      * @var InstanceInterface[]
      */
     protected $instances = [];
 
     /**
-     * Set Instances
+     * Set instances as an array
      *
      * @param InstanceInterface[] $instances
      * @return $this
@@ -27,13 +27,13 @@ trait InstanceListTrait
     }
 
     /**
-     * Get Instances
+     * Get a collection of all instances
      *
-     * @return InstanceInterface[]
+     * @return InstanceCollection
      */
     public function getInstances()
     {
-        return $this->instances;
+        return new InstanceCollection($this->instances);
     }
 
     /**

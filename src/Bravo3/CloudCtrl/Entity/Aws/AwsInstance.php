@@ -1,6 +1,8 @@
 <?php
 namespace Bravo3\CloudCtrl\Entity\Aws;
 
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
+use Bravo3\CloudCtrl\Enum\InstanceState;
 use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Interfaces\Instance\AbstractInstance;
 use Guzzle\Service\Resource\Model;
@@ -29,43 +31,37 @@ class AwsInstance extends AbstractInstance
      *
      *
      * @param Model $r
-     * @return AwsInstance[]
+     * @return InstanceCollection
      */
     public static function fromApiResult(Model $r)
     {
         $out = [];
 
-        // TODO: Need to do a live integration test and check the result of $r
-        $request_id = $r->get('requestId');
+        $request_id     = $r->get('requestId');
         $reservation_id = $r->get('ReservationId');
-        $owner = $r->get('OwnerId');
-
-        $groups = $r->get('Groups');
-        /*
-array(1) {
-  [0] =>
-  array(2) {
-    'GroupName' =>
-    string(7) "default"
-    'GroupId' =>
-    string(11) "sg-6d4b1406"
-  }
-}
-         */
-        $instances = $r->get('Instances');
-
-        echo "Request: ".$request_id."\nReservation: ".$reservation_id."\nOwner: ".$owner."\n";
-        var_dump($groups);
-        var_dump($instances);
+        $owner          = $r->get('OwnerId');
+        $groups         = $r->get('Groups');
+        $instances      = $r->get('Instances');
 
         foreach ($instances as $item) {
             $instance = new self();
             $instance->setInstanceId($item['InstanceId']);
+            $instance->setImageId($item['ImageId']);
+            $instance->setArchitecture($item['Architecture']);
+
+            switch ($item['State']['Name']) {
+                case 'pending':
+                    $instance->setInstanceState(InstanceState::PENDING);
+                    break;
+                case 'running':
+                    $instance->setInstanceState(InstanceState::RUNNING);
+                    break;
+            }
+
+            $out[] = $instance;
         }
 
-        die();
-
-        return $out;
+        return new InstanceCollection($out);
     }
 
 

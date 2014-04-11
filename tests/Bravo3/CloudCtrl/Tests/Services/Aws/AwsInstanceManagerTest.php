@@ -17,7 +17,8 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const DRYRUN_RECEIPT = 'dry-run-only';
 
-    public function setUp() {
+    public function setUp()
+    {
         if (\properties::$aws_access_key == 'insert-key-here' || empty(\properties::$aws_access_key)) {
             $this->markTestSkipped('Skipping AWS test without a valid access key');
         }
@@ -28,14 +29,27 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      */
     protected function getCredentials()
     {
+        return new AwsCredential(\properties::$aws_access_key, \properties::$aws_secret, Region::US_EAST_1);
+    }
+
+    /**
+     * @return AwsCredential
+     */
+    protected function getInvalidCredentials()
+    {
         return new AwsCredential(\properties::$aws_access_key, 'invalid-secret', Region::US_EAST_1);
     }
 
     /**
      * @return AwsService
      */
-    protected function getService() {
-        $service = CloudService::createCloudService(Provider::AWS, $this->getCredentials());
+    protected function getService($credentials = null)
+    {
+        if ($credentials === null) {
+            $credentials = $this->getCredentials();
+        }
+
+        $service = CloudService::createCloudService(Provider::AWS, $credentials);
         $this->assertTrue($service instanceof AwsService);
         $service->setProxy(\properties::getProxy());
 
@@ -46,9 +60,9 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
      * @medium
      * @group live
      */
-    public function testInvalidAwsCredentials()
+    public function testInvalidAwsSecret()
     {
-        $service = $this->getService();
+        $service = $this->getService(new AwsCredential(\properties::$aws_access_key, 'xxx', Region::US_EAST_1));
 
         /** @var $im AwsInstanceManager */
         $im = $service->getInstanceManager();
@@ -57,11 +71,31 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $schema = new InstanceSchema();
         $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2');
 
-        $r = $im->setDryMode(true)->createInstances(1, $schema);
+        $r = $im->createInstances(1, $schema);
 
         $this->assertFalse($r->getSuccess());
         $this->assertEquals(403, $r->getResultCode());
+    }
 
+    /**
+     * @medium
+     * @group live
+     */
+    public function testInvalidAwsKey()
+    {
+        $service = $this->getService(new AwsCredential('xxx', 'xxx', Region::US_EAST_1));
+
+        /** @var $im AwsInstanceManager */
+        $im = $service->getInstanceManager();
+        $this->assertTrue($im instanceof AwsInstanceManager);
+
+        $schema = new InstanceSchema();
+        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2');
+
+        $r = $im->createInstances(1, $schema);
+
+        $this->assertFalse($r->getSuccess());
+        $this->assertEquals(401, $r->getResultCode());
     }
 
     /**
@@ -83,9 +117,7 @@ class AwsInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $r = $im->createInstances(1, $schema);
 
         $this->assertTrue($r->getSuccess());
-        $this->assertEquals(self::DRYRUN_RECEIPT, $r->getReceipt());
-        $this->assertEquals(200, $r->getResultCode());
-
+        $this->assertEquals(1, $r->getInstances()->count());
 
     }
 

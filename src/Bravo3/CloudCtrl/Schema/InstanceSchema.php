@@ -51,11 +51,18 @@ class InstanceSchema
     protected $key_name = null;
 
     /**
-     * TODO: de-AWS the terminology
+     * Firewall/security groups
+     *
+     * @var string[]
+     */
+    protected $firewalls = [];
+
+    /**
+     * VPC/Network
      *
      * @var string
      */
-    protected $security_groups = [];
+    protected $network = null;
 
     /**
      * @var string
@@ -114,36 +121,36 @@ class InstanceSchema
     }
 
     /**
-     * Set security group ID list
+     * Set firewall/security group list
      *
-     * @param string $security_groups[]
+     * @param string $firewalls[]
      * @return $this
      */
-    public function setSecurityGroups($security_groups)
+    public function setFirewalls($firewalls)
     {
-        $this->security_groups = $security_groups;
+        $this->firewalls = $firewalls;
         return $this;
     }
 
     /**
-     * Get all security group IDs
+     * Get all firewall/security groups
      *
      * @return string[]
      */
-    public function getSecurityGroups()
+    public function getFirewalls()
     {
-        return $this->security_groups;
+        return $this->firewalls;
     }
 
     /**
-     * Add a security group
+     * Add a firewall/security group
      *
      * @param $id
      * @return $this
      */
-    public function addSecurityGroup($id)
+    public function addFirewall($id)
     {
-        $this->security_groups[] = $id;
+        $this->firewalls[] = $id;
         return $this;
     }
 
@@ -247,7 +254,7 @@ class InstanceSchema
      */
     public function setTenancy($tenancy)
     {
-        if (!in_array($tenancy, Tenancy::getValidTenancyTypes())) {
+        if (!in_array($tenancy, Tenancy::members())) {
             throw new InvalidValueException();
         }
 
@@ -285,6 +292,28 @@ class InstanceSchema
     public function getNameGenerator()
     {
         return $this->name_generator;
+    }
+
+    /**
+     * Set the VPC/network
+     *
+     * @param string $network
+     * @return $this
+     */
+    public function setNetwork($network)
+    {
+        $this->network = $network;
+        return $this;
+    }
+
+    /**
+     * Get the VPC/network
+     *
+     * @return string
+     */
+    public function getNetwork()
+    {
+        return $this->network;
     }
 
 

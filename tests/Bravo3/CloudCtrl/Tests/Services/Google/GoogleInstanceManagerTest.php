@@ -1,6 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Tests\Services\Google;
 
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
 use Bravo3\CloudCtrl\Enum\Provider;
@@ -16,6 +17,8 @@ use Bravo3\CloudCtrl\Services\Google\GoogleService;
 class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 {
     const APPLICATION_NAME = 'CloudCtrl Tests';
+
+    const SOURCE_DISK = "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-7-wheezy-v20140408";
 
     protected function getPrivateKey()
     {
@@ -70,12 +73,12 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($im instanceof GoogleInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('f1-micro')->setTemplateImageId('debian-7-wheezy-v20131120')->addZone(
+        $schema->setInstanceSize('f1-micro')->setTemplateImageId(self::SOURCE_DISK)->addZone(
             new Zone('us-central1-a')
         );
 
         $r = $im->createInstances(1, $schema);
-        var_dump($r);
+        $this->assertEquals(1, $r->getInstances()->count());
     }
 
     /**
@@ -95,8 +98,7 @@ class GoogleInstanceManagerTest extends \PHPUnit_Framework_TestCase
 
         $r = $im->setDryMode(true)->describeInstances($filter);
         $this->assertTrue($r->getSuccess());
-
-        // TODO: need to check a real instance..
+        $this->assertTrue($r->getInstances() instanceof InstanceCollection);
     }
 
 }

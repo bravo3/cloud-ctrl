@@ -31,6 +31,37 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
     }
 
     /**
+     * Create a new GoogleInstance from a Google_Service_Compute_Operation object
+     *
+     * TODO: complete me
+     *
+     * @param \Google_Service_Compute_Operation $template
+     * @return GoogleInstance
+     */
+    public static function fromGoogleServiceComputeOperation(\Google_Service_Compute_Operation $template)
+    {
+        $instance = new self();
+        $instance->setInstanceName($template->getName());
+        $instance->setInstanceId($template->getId());
+        $instance->setLink($template->getSelfLink());
+        $instance->setZone(new Zone($template->getZone()));
+
+        switch ($template->getStatus()) {
+            case 'RUNNING':
+                $instance->setInstanceState(InstanceState::RUNNING);
+                break;
+            case 'PENDING':
+                $instance->setInstanceState(InstanceState::PENDING);
+                break;
+
+            default:
+                $instance->setInstanceState(InstanceState::UNKNOWN);
+        }
+
+        return $instance;
+    }
+
+    /**
      * Create a new GoogleInstance from a Google_Service_Compute_Instance object
      *
      * TODO: complete me
@@ -41,7 +72,6 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
     public static function fromGoogleServiceComputeInstance(\Google_Service_Compute_Instance $template)
     {
         $instance = new self();
-
         $instance->setInstanceName($template->getName());
         $instance->setInstanceId($template->getId());
         $instance->setLink($template->getSelfLink());
@@ -51,47 +81,12 @@ class GoogleInstance extends AbstractInstance implements NamedInstanceInterface
             case 'RUNNING':
                 $instance->setInstanceState(InstanceState::RUNNING);
                 break;
+            case 'PENDING':
+                $instance->setInstanceState(InstanceState::PENDING);
+                break;
 
             default:
                 $instance->setInstanceState(InstanceState::UNKNOWN);
-
-        }
-
-        return $instance;
-    }
-
-    /**
-     * Create a new Google_Service_Compute_Instance from an InstanceSchema object
-     *
-     * TODO: complete me
-     *
-     * @param InstanceSchema $schema
-     * @param string         $instance_name
-     * @param ZoneInterface  $zone
-     * @return \Google_Service_Compute_Instance
-     */
-    public static function toGoogleServiceComputeInstance(
-        InstanceSchema $schema,
-        $instance_name,
-        ZoneInterface $zone = null
-    ) {
-        $instance = new \Google_Service_Compute_Instance();
-
-        $instance->setName($instance_name);
-        if ($zone) {
-            $instance->setZone($zone->getZoneName());
-        } else {
-            $zones = $schema->getZones();
-            if (count($zones)) {
-                $instance->setZone($zones[0]->getZoneName());
-            }
-        }
-
-        $tags = $schema->getTags();
-        if (count($tags)) {
-            $google_tag_collection = new \Google_Service_Compute_Tags();
-            $google_tag_collection->setItems($tags);
-            $instance->setTags($google_tag_collection);
         }
 
         return $instance;

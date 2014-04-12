@@ -1,7 +1,11 @@
 Cloud Controller
 ================
 
--- Early Development --
+PHP 5.4 PSR compliant cloud infrastructure abstraction.
+
+    -- Early Development --
+    Contributions welcome! This project is an active prerequisite for a larger project.
+    If you'd like to advance the development, shoot me a message to become a collaborator.
 
 This is a abstraction from major cloud provider APIs allowing you to control services such as AWS, Google Cloud Compute
 and Windows Azure from a common interface. The end result of this is that you could completely switch your entire

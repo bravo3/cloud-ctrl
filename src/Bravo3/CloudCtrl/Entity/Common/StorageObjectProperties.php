@@ -20,6 +20,21 @@ class StorageObjectProperties
     protected $redundancy;
 
     /**
+     * @var string
+     */
+    protected $etag;
+
+    /**
+     * @var \DateTime
+     */
+    protected $last_modified;
+
+    /**
+     * @var string
+     */
+    protected $version;
+
+    /**
      * @var array<string, string>
      */
     protected $options;
@@ -120,6 +135,75 @@ class StorageObjectProperties
     public function getRedundancy()
     {
         return $this->redundancy;
+    }
+
+    /**
+     * Set object ETag
+     *
+     * @param string $etag
+     * @return $this
+     */
+    public function setEtag($etag)
+    {
+        $this->etag = $etag;
+        return $this;
+    }
+
+    /**
+     * Get object ETag
+     *
+     * @return string
+     */
+    public function getEtag()
+    {
+        return $this->etag;
+    }
+
+    /**
+     * Set the last modified date
+     *
+     * @param \DateTime|string $last_modified
+     * @return $this
+     */
+    public function setLastModified($last_modified)
+    {
+        if (!($last_modified instanceof \DateTime)) {
+            $last_modified = new \DateTime($last_modified);
+        }
+        $this->last_modified = $last_modified;
+        return $this;
+    }
+
+    /**
+     * Get the last modified date
+     *
+     * @return \DateTime
+     */
+    public function getLastModified()
+    {
+        return $this->last_modified;
+    }
+
+    /**
+     * Set object version ID
+     *
+     * @param string $version
+     * @return $this
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    /**
+     * Get object version ID
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 
 

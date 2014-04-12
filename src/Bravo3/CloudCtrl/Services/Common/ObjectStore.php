@@ -2,6 +2,7 @@
 namespace Bravo3\CloudCtrl\Services\Common;
 
 use Bravo3\CloudCtrl\Entity\Common\StorageObject;
+use Bravo3\CloudCtrl\Exceptions\NotExistsException;
 use Bravo3\CloudCtrl\Reports\SuccessReport;
 use Bravo3\CloudCtrl\Reports\UploadReport;
 
@@ -19,6 +20,15 @@ abstract class ObjectStore extends CloudServiceAwareComponent
      */
     abstract public function storeObject(StorageObject $object);
 
+    /**
+     * Retrieve an object from the remote store
+     *
+     * This will save to a file if a local filename exists, else it will populate the object data.
+     *
+     * @param StorageObject $object
+     * @return StorageObject
+     * @throws NotExistsException
+     */
     abstract public function retrieveObject(StorageObject $object);
 
     /**

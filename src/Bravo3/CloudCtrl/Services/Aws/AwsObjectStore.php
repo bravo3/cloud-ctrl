@@ -1,9 +1,12 @@
 <?php
 namespace Bravo3\CloudCtrl\Services\Aws;
 
+use Aws\S3\Exception\NoSuchKeyException;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Bravo3\CloudCtrl\Entity\Common\StorageObject;
+use Bravo3\CloudCtrl\Exceptions\CloudCtrlException;
+use Bravo3\CloudCtrl\Exceptions\NotExistsException;
 use Bravo3\CloudCtrl\Reports\SuccessReport;
 use Bravo3\CloudCtrl\Reports\UploadReport;
 use Bravo3\CloudCtrl\Services\Common\ObjectStore;
@@ -42,9 +45,9 @@ class AwsObjectStore extends ObjectStore
                 $properties->getAcl(),
                 $properties->getOptions()
             );
-            $report->setEtag($transfer->get('ETag'));
-            $report->setVersion($transfer->get('Version'));
-            $report->setReceipt($transfer->get('RequestId'));
+            $report->setEtag($transfer['ETag']);
+            $report->setVersion($transfer['Version']);
+            $report->setReceipt($transfer['RequestId']);
 
         } catch (\Aws\S3\Exception\S3Exception $e) {
             $report->setSuccess(false);
@@ -67,20 +70,39 @@ class AwsObjectStore extends ObjectStore
         /** @var S3Client $s3 */
         $s3 = $this->getService('s3');
 
-        try {
-            $transfer = $s3->getObject(
-                [
-                    'Bucket' => $object->getBucket(),
-                    'Key'    => $object->getKey(),
-                ]
-            );
+        $useLocal = $object->getLocalFilename() ? true : false;
 
-            var_dump($transfer);
+        $args = [
+            'Bucket' => $object->getBucket(),
+            'Key'    => $object->getKey(),
+        ];
 
-        } catch (S3Exception $e) {
-
+        if ($useLocal) {
+            $args['SaveAs'] = $object->getLocalFilename();
         }
 
+        try {
+            $transfer = $s3->getObject($args);
+
+            if (!$useLocal) {
+                $object->setData((string)$transfer['Body']);
+            }
+
+            $object->getProperties()->setEtag($transfer['ETag']);
+            $object->getProperties()->setVersion($transfer['Version']);
+            $object->getProperties()->setLastModified($transfer['LastModified']);
+
+        } catch (NoSuchKeyException $e) {
+            throw new NotExistsException(
+                'The requested object does not exist in bucket "'.$object->getBucket().'"',
+                0, $e, $object->getKey());
+        } catch (S3Exception $e) {
+            throw new CloudCtrlException(
+                "An error occurred trying to retrieve the object",
+                $e->getResponse()->getStatusCode(), $e);
+        }
+
+        return $object;
     }
 
     /**
@@ -102,7 +124,7 @@ class AwsObjectStore extends ObjectStore
                 ]
             );
 
-            $report->setReceipt($transfer->get('RequestId'));
+            $report->setReceipt($transfer['RequestId']);
         } catch (S3Exception $e) {
             $report->setSuccess(false);
             $report->setResultCode($e->getResponse()->getStatusCode());
@@ -118,7 +140,35 @@ class AwsObjectStore extends ObjectStore
      */
     public function objectExists(StorageObject $object)
     {
-        // TODO: Implement objectExists() method.
+        /** @var S3Client $s3 */
+        $s3 = $this->getService('s3');
+
+        $args = [
+            'Bucket' => $object->getBucket(),
+            'Key'    => $object->getKey(),
+        ];
+
+        try {
+            $transfer = $s3->headObject($args);
+
+            $object->getProperties()->setEtag($transfer['ETag']);
+            $object->getProperties()->setVersion($transfer['Version']);
+            $object->getProperties()->setLastModified($transfer['LastModified']);
+
+            return true;
+
+        } catch (NoSuchKeyException $e) {
+
+            return false;
+
+        } catch (S3Exception $e) {
+
+            throw new CloudCtrlException(
+                "An error occurred trying to retrieve the object",
+                $e->getResponse()->getStatusCode(), $e);
+
+        }
+
     }
 
     /**

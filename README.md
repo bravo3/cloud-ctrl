@@ -31,7 +31,7 @@ Google Cloud
 ------------
 
 ### Instance Manager
-* Create EC2 instances in multiple zones
+* Create compute instances in multiple zones
 * Describe instances
 
 Windows Azure

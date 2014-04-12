@@ -1,21 +1,71 @@
 <?php
 namespace Bravo3\CloudCtrl\Tests\Resources;
 
+use Bravo3\CloudCtrl\Interfaces\Credentials\CredentialInterface;
+use Bravo3\NetworkProxy\NetworkProxyInterface;
+
 /**
- * Settings required for testing
+ * Settings required for live integration testing
  *
  * @see properties.dist.php
  */
 class TestProperties
 {
-    public static $aws_access_key = 'insert-key-here';
-    public static $aws_secret = 'insert-secret-here';
+    protected function __construct() {}
 
-    public static $google_client_id = 'xxxxxx.apps.googleusercontent.com';
-    public static $google_service_account_name = 'xxxxxx@developer.gserviceaccount.com';
-    public static $google_project_id = 'php-cloud-controller';
+    protected static $instance = null;
 
-    public static function getProxy() {
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new static();
+        }
+
+        return self::$instance;
+    }
+
+    // Amazon Web Services
+
+    /**
+     * @return CredentialInterface
+     */
+    public function getAwsCredentials()
+    {
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAwsTestBucket()
+    {
+        return 'php-cloud-controller';
+    }
+
+    // Google
+
+    /**
+     * @return CredentialInterface
+     */
+    public function getGoogleCredentials()
+    {
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGoogleTestBucket()
+    {
+        return 'php-cloud-controller';
+    }
+
+    // Common
+
+    /**
+     * @return NetworkProxyInterface
+     */
+    public function getProxy()
+    {
         return null;
     }
 }

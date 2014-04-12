@@ -1,10 +1,6 @@
 <?php
 
 require __DIR__.'/../vendor/autoload.php';
-require __DIR__.'/Bravo3/CloudCtrl/Tests/Resources/Logger.php';
-require __DIR__.'/Bravo3/CloudCtrl/Tests/Resources/TestCredential.php';
-require __DIR__.'/Bravo3/CloudCtrl/Tests/Resources/TestRegionAwareCredential.php';
-require __DIR__.'/Bravo3/CloudCtrl/Tests/Resources/TestProperties.php';
 
 // Read the comments in properties.dist.php
 $nonDistProperties = __DIR__.'/properties.php';

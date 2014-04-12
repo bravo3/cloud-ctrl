@@ -10,6 +10,7 @@ use Bravo3\CloudCtrl\Services\Aws\AwsService;
 use Bravo3\CloudCtrl\Services\Aws\AzureService;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\LoadBalancerManager;
+use Bravo3\CloudCtrl\Services\Common\ObjectStore;
 use Bravo3\CloudCtrl\Services\Common\ResourceManager;
 use Bravo3\CloudCtrl\Services\Google\GoogleService;
 use Bravo3\NetworkProxy\NetworkProxyInterface;
@@ -72,17 +73,22 @@ abstract class CloudService implements LoggerAwareInterface
     /**
      * @var InstanceManager
      */
-    protected $instanceManager;
+    protected $instance_manager;
 
     /**
      * @var ResourceManager
      */
-    protected $resourceManager;
+    protected $resource_manager;
 
     /**
      * @var LoadBalancerManager
      */
-    protected $loadBalancerManager;
+    protected $load_balancer_manager;
+
+    /**
+     * @var ObjectStore
+     */
+    protected $object_store;
 
 
     protected function __construct(
@@ -97,9 +103,11 @@ abstract class CloudService implements LoggerAwareInterface
             $this->region = $region;
         }
 
+        // TODO: convert to lazy loading!
         $this->createInstanceManager();
         $this->createResourceManager();
         $this->createLoadBalancerManager();
+        $this->createObjectStore();
     }
 
 
@@ -166,7 +174,7 @@ abstract class CloudService implements LoggerAwareInterface
      */
     public function getInstanceManager()
     {
-        return $this->instanceManager;
+        return $this->instance_manager;
     }
 
     /**
@@ -181,7 +189,7 @@ abstract class CloudService implements LoggerAwareInterface
      */
     public function getLoadBalancerManager()
     {
-        return $this->loadBalancerManager;
+        return $this->load_balancer_manager;
     }
 
     /**
@@ -196,11 +204,29 @@ abstract class CloudService implements LoggerAwareInterface
      */
     public function getResourceManager()
     {
-        return $this->resourceManager;
+        return $this->resource_manager;
     }
 
     /**
-     * Set Proxy
+     * Create an object store
+     */
+    abstract protected function createObjectStore();
+
+    /**
+     * Get ObjectStore
+     *
+     * @return ObjectStore
+     */
+    public function getObjectStore()
+    {
+        return $this->object_store;
+    }
+
+
+    /**
+     * Set network proxy
+     *
+     * A SOCKS or HTTP proxy
      *
      * @param NetworkProxyInterface $proxy
      * @return $this
@@ -212,7 +238,9 @@ abstract class CloudService implements LoggerAwareInterface
     }
 
     /**
-     * Get Proxy
+     * Get network proxy
+     *
+     * A SOCKS or HTTP proxy
      *
      * @return NetworkProxyInterface
      */

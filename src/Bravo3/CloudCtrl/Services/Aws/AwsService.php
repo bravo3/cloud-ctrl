@@ -13,7 +13,7 @@ class AwsService extends CloudService
      */
     protected function createInstanceManager()
     {
-        $this->instanceManager = new AwsInstanceManager($this);
+        $this->instance_manager = new AwsInstanceManager($this);
     }
 
     /**
@@ -30,6 +30,14 @@ class AwsService extends CloudService
     protected function createResourceManager()
     {
         // TODO: Implement createResourceManager() method.
+    }
+
+    /**
+     * Create an object store
+     */
+    protected function createObjectStore()
+    {
+        $this->object_store = new AwsObjectStore($this);
     }
 
 

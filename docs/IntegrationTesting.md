@@ -9,23 +9,40 @@ Using your own AWS/Google accounts, make it look something like this -
 
     <?php
 
+    use Aws\Common\Enum\Region;
+    use Bravo3\CloudCtrl\Entity\Aws\AwsCredential;
+    use Bravo3\CloudCtrl\Entity\Google\GoogleCredential;
+    use Bravo3\CloudCtrl\Tests\Resources\TestProperties;
+
     /**
      * Unit test properties
      *
      * To override any of the default properties, duplicate this file as 'properties.php' and replace any
      * members of the TestProperties class that you wish to change
      */
-    class properties extends \Bravo3\CloudCtrl\Tests\Resources\TestProperties
+    class properties extends TestProperties
     {
-        public static $aws_access_key = 'AKIAIFQFZ7BAAKOGXXCA';
-        public static $aws_secret = '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';
+        // AWS
+        public function getAwsCredentials()
+        {
+            return new AwsCredential('xxxxxx', 'xxxxxxx', Region::US_EAST_1);
+        }
 
-        public static $google_client_id = '958133329576-jrit03r724s4er57ujalqrac6cb264oe.apps.googleusercontent.com';
-        public static $google_service_account_name = '958133329576-jrit03r724s4er57ujalqrac6cb264oe@developer.gserviceaccount.com';
-        public static $google_project_id = 'php-cloud-controller';
+        // Google
+        public function getGoogleCredentials()
+        {
+            return new GoogleCredential(
+                'xxxxxx-fgki3s54654654r2egip34534f445gf5.apps.googleusercontent.com',
+                'xxxxxx-fgki3s54654654r2egip34534f445gf5@developer.gserviceaccount.com',
+                __DIR__.'/Bravo3/CloudCtrl/Tests/Resources/privatekey.p12',
+                'php-cloud-controller',
+                'CloudCtrl Tests'
+            );
+        }
+
     }
 
-For Google, you will need to put the private key you are provided here:
+For Google, you will need to put the private key you are provided in the above directory:
 
     tests/Bravo3/CloudCtrl/Tests/Resources/privatekey.p12
 

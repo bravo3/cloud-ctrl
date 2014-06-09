@@ -123,7 +123,7 @@ class InstanceSchema
     /**
      * Set firewall/security group list
      *
-     * @param string $firewalls[]
+     * @param string[] $firewalls
      * @return $this
      */
     public function setFirewalls($firewalls)

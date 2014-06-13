@@ -3,6 +3,7 @@ namespace Bravo3\CloudCtrl\Services\Aws;
 
 use Aws\Ec2\Ec2Client;
 use Aws\Ec2\Exception\Ec2Exception;
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Aws\AwsInstance;
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
@@ -16,12 +17,13 @@ use Bravo3\CloudCtrl\Services\Common\InstanceManager;
  */
 class AwsInstanceManager extends InstanceManager
 {
-    use AwsTrait;
-
+    const MAX_RESULTS     = 1000;
     const NO_NAME         = '<no name>';
     const DRY_RUN_STATUS  = 412;
     const DRY_RUN_ERR     = "Request would have succeeded, but DryRun flag is set.";
     const DRY_RUN_RECEIPT = "dry-run-only";
+
+    use AwsTrait;
 
     /**
      * Create some peeps
@@ -112,6 +114,11 @@ class AwsInstanceManager extends InstanceManager
             }
         }
 
+        // Tag instances, this can only be done post-launch
+        if ($report->getSuccess() && count($schema->getTags())) {
+            $this->setInstanceTags($schema->getTags(), InstanceFilter::fromInstanceCollection($report->getInstances()));
+        }
+
         return $report;
     }
 
@@ -135,14 +142,98 @@ class AwsInstanceManager extends InstanceManager
         // TODO: Implement restartInstances() method.
     }
 
+    /**
+     *
+     *
+     * @param InstanceFilter $instances
+     * @return InstanceCollection
+     */
     public function describeInstances(InstanceFilter $instances)
     {
-        // TODO: Implement describeInstances() method.
+        /** @var $ec2 Ec2Client */
+        $ec2 = $this->getService('ec2');
+
+        $filters = [];
+
+        /*
+        // Tags
+        foreach ($instances->getTags() as $key => $value) {
+            $filters[] = [
+                'Name'   => 'tag:'.$key,
+                'Values' => (array)$value
+            ];
+        }
+
+        // Instance size (aka 'type')
+        if ($values = $instances->getSizeList()) {
+            $filters[] = [
+                'Name'   => 'instance-type',
+                'Values' => $values,
+            ];
+        }
+
+        // Instance type (eg on-demand, spot, reserved)
+        // TODO: find out what the damn value should be, see issue #2
+        //if ($values = $instances->getTypeList()) {
+        //    $filters[] = [
+        //        'Name' => 'instance-lifecycle',
+        //        'Values' => null,
+        //    ];
+        //}
+
+        if ($values = $instances->getZoneList()) {
+            $filters[] = [
+                'Name'   => 'availability-zone',
+                'Values' => $values,
+            ];
+        }
+        */
+
+        $token      = null;
+        $collection = new InstanceCollection();
+        do {
+            $result = $ec2->describeInstances(
+                [
+                    'DryRun'      => $this->getDryMode(),
+                    'InstanceIds' => $instances->getIdList(),
+                    'Filters'     => $filters,
+                    'NextToken'   => $token,
+                    'MaxResults'  => self::MAX_RESULTS,
+                ]
+            );
+
+            $instances = AwsInstance::fromApiResult($result);
+            $collection->addCollection($instances);
+
+        } while ($token);
+
+        return $collection;
+
     }
 
+    /**
+     * Set instance tags
+     *
+     * @param array          $tags Associative array of tags
+     * @param InstanceFilter $instances
+     */
     public function setInstanceTags($tags, InstanceFilter $instances)
     {
-        // TODO: Implement setInstanceTags() method.
+        /** @var $ec2 Ec2Client */
+        $ec2 = $this->getService('ec2');
+
+        $tags = [];
+        foreach ($tags as $key => $value) {
+            $tags[] = ['Key' => $key, 'Value' => $value];
+        }
+
+        $ec2->createTags(
+            [
+                'DryRun'    => $this->getDryMode(),
+                'Resources' => $instances->getIdList(),
+                'Tags'      => $tags
+            ]
+        );
     }
 
 

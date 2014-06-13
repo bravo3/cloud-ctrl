@@ -1,7 +1,9 @@
 <?php
 namespace Bravo3\CloudCtrl\Interfaces\Instance;
 
-use Bravo3\CloudCtrl\Interfaces\IPAddress\IPAddressInterface;
+use Bravo3\CloudCtrl\Enum\Architecture;
+use Bravo3\CloudCtrl\Enum\InstanceState;
+use Bravo3\CloudCtrl\Interfaces\IpAddress\IpAddressInterface;
 use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
 
 
@@ -22,9 +24,9 @@ abstract class AbstractInstance implements InstanceInterface
     protected $zone;
 
     /**
-     * @var string
+     * @var InstanceState
      */
-    protected $state;
+    protected $instance_state;
 
     /**
      * @var string
@@ -46,7 +48,15 @@ abstract class AbstractInstance implements InstanceInterface
      */
     protected $architecture;
 
-    // TODO: instance state - needs abstract enumeration
+    /**
+     * @var string
+     */
+    protected $instance_size;
+
+    /**
+     * @var array
+     */
+    protected $tags = [];
 
     // --
 
@@ -97,32 +107,32 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Set the instance state
      *
-     * @param string $state
+     * @param InstanceState $instance_state
      * @return $this
      */
-    public function setInstanceState($state)
+    public function setInstanceState(InstanceState $instance_state)
     {
-        $this->state = $state;
+        $this->instance_state = $instance_state;
         return $this;
     }
 
     /**
      * Get the instance state
      *
-     * @return string
+     * @return InstanceState
      */
     public function getInstanceState()
     {
-        return $this->state;
+        return $this->instance_state;
     }
 
     /**
      * Set Architecture
      *
-     * @param string $architecture
+     * @param Architecture $architecture
      * @return $this
      */
-    public function setArchitecture($architecture)
+    public function setArchitecture(Architecture $architecture)
     {
         $this->architecture = $architecture;
         return $this;
@@ -131,7 +141,7 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Get Architecture
      *
-     * @return string
+     * @return Architecture
      */
     public function getArchitecture()
     {
@@ -163,10 +173,10 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Set PrivateAddress
      *
-     * @param IPAddressInterface $private_address
+     * @param IpAddressInterface $private_address
      * @return $this
      */
-    public function setPrivateAddress($private_address)
+    public function setPrivateAddress(IpAddressInterface $private_address)
     {
         $this->private_address = $private_address;
         return $this;
@@ -175,7 +185,7 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Get PrivateAddress
      *
-     * @return IPAddressInterface
+     * @return IpAddressInterface
      */
     public function getPrivateAddress()
     {
@@ -185,10 +195,10 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Set PublicAddress
      *
-     * @param IPAddressInterface $public_address
+     * @param IpAddressInterface $public_address
      * @return $this
      */
-    public function setPublicAddress($public_address)
+    public function setPublicAddress(IpAddressInterface $public_address)
     {
         $this->public_address = $public_address;
         return $this;
@@ -197,13 +207,82 @@ abstract class AbstractInstance implements InstanceInterface
     /**
      * Get PublicAddress
      *
-     * @return IPAddressInterface
+     * @return IpAddressInterface
      */
     public function getPublicAddress()
     {
         return $this->public_address;
     }
 
+    /**
+     * Set instance size
+     *
+     * @param string $instance_size
+     * @return $this
+     */
+    public function setInstanceSize($instance_size)
+    {
+        $this->instance_size = $instance_size;
+        return $this;
+    }
+
+    /**
+     * Get instance size
+     *
+     * @return string
+     */
+    public function getInstanceSize()
+    {
+        return $this->instance_size;
+    }
+
+    /**
+     * Set tags
+     *
+     * @param array $tags
+     * @return $this
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+
+    /**
+     * Get tags
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Get a specific tag
+     *
+     * @param string $key
+     * @return string
+     */
+    public function getTag($key)
+    {
+        if (array_key_exists($key, $this->tags)) {
+            return $this->tags[$key];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Add or replace a tag
+     *
+     * @param string $key
+     * @param string $value
+     */
+    public function addTag($key, $value)
+    {
+        $this->tags[$key] = $value;
+    }
 
 }
  

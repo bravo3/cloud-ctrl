@@ -4,7 +4,9 @@ namespace Bravo3\CloudCtrl\Enum;
 use Eloquent\Enumeration\AbstractEnumeration;
 
 /**
- * NB: not final - allow for unknown types
+ * @method static Architecture X86_64()
+ * @method static Architecture I64()
+ * @method static Architecture I386()
  */
 class Architecture extends AbstractEnumeration
 {

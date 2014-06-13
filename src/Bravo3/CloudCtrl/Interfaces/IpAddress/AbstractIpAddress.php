@@ -1,7 +1,7 @@
 <?php
-namespace Bravo3\CloudCtrl\Interfaces\IPAddress;
+namespace Bravo3\CloudCtrl\Interfaces\IpAddress;
 
-abstract class AbstractIpAddress implements IPAddressInterface
+abstract class AbstractIpAddress implements IpAddressInterface
 {
     /**
      * @var string

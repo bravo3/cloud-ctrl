@@ -1,7 +1,7 @@
 <?php
-namespace Bravo3\CloudCtrl\Interfaces\IPAddress;
+namespace Bravo3\CloudCtrl\Interfaces\IpAddress;
 
-interface IPAddressInterface
+interface IpAddressInterface
 {
 
     /**

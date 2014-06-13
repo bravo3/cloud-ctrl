@@ -4,7 +4,8 @@ namespace Bravo3\CloudCtrl\Enum\Google;
 use Eloquent\Enumeration\AbstractEnumeration;
 
 /**
- * Does this exist in the Google API somewhere?
+ * @method static Scope COMPUTE_READ()
+ * @method static Scope COMPUTE_WRITE()
  */
 class Scope extends AbstractEnumeration
 {

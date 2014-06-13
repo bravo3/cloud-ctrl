@@ -2,6 +2,7 @@
 namespace Bravo3\CloudCtrl\Tests\Services\Aws;
 
 use Bravo3\CloudCtrl\Entity\Common\Zone;
+use Bravo3\CloudCtrl\Filters\InstanceFilter;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Aws\AwsInstanceManager;
 use Bravo3\CloudCtrl\Tests\Base\AwsTestBase;
@@ -81,6 +82,30 @@ class AwsInstanceManagerTest extends AwsTestBase
         $this->assertEquals(1, $r->getInstances()->count());
 
     }
+
+
+    /**
+     * @medium
+     * @group live
+     */
+    public function testDescribeAwsInstances()
+    {
+        $service = $this->getService();
+
+        /** @var $im AwsInstanceManager */
+        $im = $service->getInstanceManager();
+        $this->assertTrue($im instanceof AwsInstanceManager);
+        $this->assertFalse($im->getDryMode());
+
+        $filter = new InstanceFilter();
+        $filter->addZone(new Zone('ap-southeast-2a'), new Zone('ap-southeast-2b'));
+
+        $r = $im->describeInstances($filter);
+        var_dump($r);
+        //$this->assertTrue($r->getSuccess());
+        //$this->assertTrue($r->getInstances() instanceof InstanceCollection);
+    }
+
 
 }
  

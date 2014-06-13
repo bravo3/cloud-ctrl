@@ -2,9 +2,10 @@
 namespace Bravo3\CloudCtrl\Entity\Aws;
 
 use Bravo3\CloudCtrl\Collections\InstanceCollection;
-use Bravo3\CloudCtrl\Enum\InstanceState;
+use Bravo3\CloudCtrl\Enum\Architecture;
 use Bravo3\CloudCtrl\Enum\Provider;
 use Bravo3\CloudCtrl\Interfaces\Instance\AbstractInstance;
+use Bravo3\CloudCtrl\Mappers\Aws\AwsInstanceStateMapper;
 use Guzzle\Service\Resource\Model;
 
 class AwsInstance extends AbstractInstance
@@ -28,7 +29,7 @@ class AwsInstance extends AbstractInstance
 
 
     /**
-     *
+     * Create an AwsInstance from a Guzzle Model
      *
      * @param Model $r
      * @return InstanceCollection
@@ -37,28 +38,37 @@ class AwsInstance extends AbstractInstance
     {
         $out = [];
 
-        $request_id     = $r->get('requestId');
-        $reservation_id = $r->get('ReservationId');
-        $owner          = $r->get('OwnerId');
-        $groups         = $r->get('Groups');
-        $instances      = $r->get('Instances');
+        $addReservation = function(array $instances) use (&$out) {
+            foreach ($instances as $item) {
+                // debug
+                echo "fromApiResult():\n";
+                var_dump($item);
 
-        foreach ($instances as $item) {
-            $instance = new self();
-            $instance->setInstanceId($item['InstanceId']);
-            $instance->setImageId($item['ImageId']);
-            $instance->setArchitecture($item['Architecture']);
 
-            switch ($item['State']['Name']) {
-                case 'pending':
-                    $instance->setInstanceState(InstanceState::PENDING);
-                    break;
-                case 'running':
-                    $instance->setInstanceState(InstanceState::RUNNING);
-                    break;
+                $instance = new self();
+                $instance->setInstanceId($item['InstanceId']);
+                $instance->setImageId($item['ImageId']);
+                $instance->setArchitecture(Architecture::memberByValue($item['Architecture']));
+                $instance->setInstanceState(AwsInstanceStateMapper::fromAwsCode($item['State']['Code']));
+                $instance->setInstanceSize($item['InstanceType']);
+
+                if ($tags = $item['Tags']) {
+                    foreach ($tags as $tag) {
+                        $instance->addTag($tag['Key'], $tag['Value']);
+                    }
+                }
+
+                $out[] = $instance;
+
             }
+        };
 
-            $out[] = $instance;
+        if ($reservations = $r->get('Reservations')) {
+            foreach ($reservations as $reservation) {
+                $addReservation($reservation['Instances']);
+            }
+        } else {
+            $addReservation($r->get('Instances'));
         }
 
         return new InstanceCollection($out);

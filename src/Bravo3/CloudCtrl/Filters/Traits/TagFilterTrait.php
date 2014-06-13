@@ -10,7 +10,7 @@ trait TagFilterTrait
     /**
      * @var array
      */
-    protected $tags;
+    protected $tags = [];
 
     /**
      * Set tags

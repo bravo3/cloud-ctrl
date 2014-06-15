@@ -1,6 +1,7 @@
 <?php
 namespace Bravo3\CloudCtrl\Tests\Services\Aws;
 
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
@@ -52,7 +53,7 @@ class AwsInstanceManagerTest extends AwsTestBase
         $this->assertTrue($im instanceof AwsInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2');
+        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-3b4bd301');
 
         $r = $im->createInstances(1, $schema);
 
@@ -74,7 +75,7 @@ class AwsInstanceManagerTest extends AwsTestBase
         $this->assertTrue($im instanceof AwsInstanceManager);
 
         $schema = new InstanceSchema();
-        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-bba18dd2')->addZone(new Zone('us-east-1b'));
+        $schema->setInstanceSize('t1.micro')->setTemplateImageId('ami-3b4bd301')->addZone(new Zone('ap-southeast-2a'));
 
         $r = $im->createInstances(1, $schema);
 
@@ -99,11 +100,12 @@ class AwsInstanceManagerTest extends AwsTestBase
 
         $filter = new InstanceFilter();
         $filter->addZone(new Zone('ap-southeast-2a'), new Zone('ap-southeast-2b'));
+        $filter->addTag('env', 'prod');
+        $filter->addSize('m1.small');
 
         $r = $im->describeInstances($filter);
-        var_dump($r);
-        //$this->assertTrue($r->getSuccess());
-        //$this->assertTrue($r->getInstances() instanceof InstanceCollection);
+        $this->assertTrue($r->getSuccess());
+        $this->assertTrue($r->getInstances() instanceof InstanceCollection);
     }
 
 

@@ -5,9 +5,11 @@ use Aws\Ec2\Ec2Client;
 use Aws\Ec2\Exception\Ec2Exception;
 use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Aws\AwsInstance;
+use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
+use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
@@ -143,19 +145,19 @@ class AwsInstanceManager extends InstanceManager
     }
 
     /**
-     *
+     * Get a list of AWS instances
      *
      * @param InstanceFilter $instances
-     * @return InstanceCollection
+     * @return \Bravo3\CloudCtrl\Reports\InstanceListReport
      */
     public function describeInstances(InstanceFilter $instances)
     {
         /** @var $ec2 Ec2Client */
         $ec2 = $this->getService('ec2');
+        $report  = new InstanceListReport();
 
         $filters = [];
 
-        /*
         // Tags
         foreach ($instances->getTags() as $key => $value) {
             $filters[] = [
@@ -182,12 +184,17 @@ class AwsInstanceManager extends InstanceManager
         //}
 
         if ($values = $instances->getZoneList()) {
+            $filter_values = [];
+            foreach ($values as $zone) {
+                /** @var Zone $zone */
+                $filter_values[] = $zone->getZoneName();
+            }
+
             $filters[] = [
                 'Name'   => 'availability-zone',
-                'Values' => $values,
+                'Values' => $filter_values,
             ];
         }
-        */
 
         $token      = null;
         $collection = new InstanceCollection();
@@ -198,7 +205,6 @@ class AwsInstanceManager extends InstanceManager
                     'InstanceIds' => $instances->getIdList(),
                     'Filters'     => $filters,
                     'NextToken'   => $token,
-                    'MaxResults'  => self::MAX_RESULTS,
                 ]
             );
 
@@ -207,8 +213,10 @@ class AwsInstanceManager extends InstanceManager
 
         } while ($token);
 
-        return $collection;
+        $report->setInstances($collection);
+        $report->setSuccess(true);
 
+        return $report;
     }
 
     /**

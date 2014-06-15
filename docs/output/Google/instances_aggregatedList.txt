@@ -1,0 +1,220 @@
+class Google_Service_Compute_InstanceAggregatedList#189 (8) {
+  public $id =>
+  string(50) "projects/php-cloud-controller/aggregated/instances"
+  protected $itemsType =>
+  string(42) "Google_Service_Compute_InstancesScopedList"
+  protected $itemsDataType =>
+  string(3) "map"
+  public $kind =>
+  string(30) "compute#instanceAggregatedList"
+  public $nextPageToken =>
+  NULL
+  public $selfLink =>
+  string(88) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/aggregated/instances"
+  protected $data =>
+  array(1) {
+    'items' =>
+    array(6) {
+      'zones/asia-east1-a' =>
+      array(1) {
+        'warning' =>
+        array(3) {
+          'code' =>
+          string(18) "NO_RESULTS_ON_PAGE"
+          'message' =>
+          string(65) "There are no results for scope 'zones/asia-east1-a' on this page."
+          'data' =>
+          array(1) {
+            [0] =>
+            array(2) {
+              'key' =>
+              string(5) "scope"
+              'value' =>
+              string(18) "zones/asia-east1-a"
+            }
+          }
+        }
+      }
+      'zones/asia-east1-b' =>
+      array(1) {
+        'warning' =>
+        array(3) {
+          'code' =>
+          string(18) "NO_RESULTS_ON_PAGE"
+          'message' =>
+          string(65) "There are no results for scope 'zones/asia-east1-b' on this page."
+          'data' =>
+          array(1) {
+            [0] =>
+            array(2) {
+              'key' =>
+              string(5) "scope"
+              'value' =>
+              string(18) "zones/asia-east1-b"
+            }
+          }
+        }
+      }
+      'zones/europe-west1-a' =>
+      array(1) {
+        'warning' =>
+        array(3) {
+          'code' =>
+          string(18) "NO_RESULTS_ON_PAGE"
+          'message' =>
+          string(67) "There are no results for scope 'zones/europe-west1-a' on this page."
+          'data' =>
+          array(1) {
+            [0] =>
+            array(2) {
+              'key' =>
+              string(5) "scope"
+              'value' =>
+              string(20) "zones/europe-west1-a"
+            }
+          }
+        }
+      }
+      'zones/europe-west1-b' =>
+      array(1) {
+        'warning' =>
+        array(3) {
+          'code' =>
+          string(18) "NO_RESULTS_ON_PAGE"
+          'message' =>
+          string(67) "There are no results for scope 'zones/europe-west1-b' on this page."
+          'data' =>
+          array(1) {
+            [0] =>
+            array(2) {
+              'key' =>
+              string(5) "scope"
+              'value' =>
+              string(20) "zones/europe-west1-b"
+            }
+          }
+        }
+      }
+      'zones/us-central1-a' =>
+      array(1) {
+        'instances' =>
+        array(1) {
+          [0] =>
+          array(14) {
+            'kind' =>
+            string(16) "compute#instance"
+            'id' =>
+            string(19) "8715311669743477534"
+            'creationTimestamp' =>
+            string(29) "2014-06-15T01:14:05.214-07:00"
+            'zone' =>
+            string(87) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/zones/us-central1-a"
+            'status' =>
+            string(7) "RUNNING"
+            'name' =>
+            string(24) "i-539d55c4228d8504648661"
+            'tags' =>
+            array(2) {
+              'items' =>
+              array(1) {
+                [0] =>
+                string(4) "test"
+              }
+              'fingerprint' =>
+              string(12) "24toQCp64m8="
+            }
+            'machineType' =>
+            string(109) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/zones/us-central1-a/machineTypes/f1-micro"
+            'canIpForward' =>
+            bool(false)
+            'networkInterfaces' =>
+            array(1) {
+              [0] =>
+              array(4) {
+                'network' =>
+                string(91) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/global/networks/default"
+                'networkIP' =>
+                string(13) "10.240.255.20"
+                'name' =>
+                string(4) "nic0"
+                'accessConfigs' =>
+                array(1) {
+                  [0] =>
+                  array(4) {
+                    'kind' =>
+                    string(20) "compute#accessConfig"
+                    'type' =>
+                    string(14) "ONE_TO_ONE_NAT"
+                    'name' =>
+                    string(12) "External NAT"
+                    'natIP' =>
+                    string(14) "23.251.158.112"
+                  }
+                }
+              }
+            }
+            'disks' =>
+            array(1) {
+              [0] =>
+              array(7) {
+                'kind' =>
+                string(20) "compute#attachedDisk"
+                'index' =>
+                int(0)
+                'type' =>
+                string(10) "PERSISTENT"
+                'source' =>
+                string(118) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/zones/us-central1-a/disks/i-539d55c4228d8504648661"
+                'deviceName' =>
+                string(17) "persistent-disk-0"
+                'boot' =>
+                bool(true)
+                'autoDelete' =>
+                bool(false)
+              }
+            }
+            'metadata' =>
+            array(2) {
+              'kind' =>
+              string(16) "compute#metadata"
+              'fingerprint' =>
+              string(12) "uwBFGw426uU="
+            }
+            'selfLink' =>
+            string(122) "https://www.googleapis.com/compute/v1/projects/php-cloud-controller/zones/us-central1-a/instances/i-539d55c4228d8504648661"
+            'scheduling' =>
+            array(2) {
+              'onHostMaintenance' =>
+              string(7) "MIGRATE"
+              'automaticRestart' =>
+              bool(true)
+            }
+          }
+        }
+      }
+      'zones/us-central1-b' =>
+      array(1) {
+        'warning' =>
+        array(3) {
+          'code' =>
+          string(18) "NO_RESULTS_ON_PAGE"
+          'message' =>
+          string(66) "There are no results for scope 'zones/us-central1-b' on this page."
+          'data' =>
+          array(1) {
+            [0] =>
+            array(2) {
+              'key' =>
+              string(5) "scope"
+              'value' =>
+              string(19) "zones/us-central1-b"
+            }
+          }
+        }
+      }
+    }
+  }
+  protected $processed =>
+  array(0) {
+  }
+}

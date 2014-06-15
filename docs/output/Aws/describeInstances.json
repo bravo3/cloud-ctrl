@@ -1,0 +1,117 @@
+{"requestId": "6f84f76e-c717-4d32-9407-d0726027614f", "Reservations": [
+    {
+        "ReservationId": "r-e6be79da",
+        "OwnerId": "362402591332",
+        "Groups": [],
+        "Instances": [
+            {
+                "InstanceId": "i-046dc13b",
+                "ImageId": "ami-5ba83761",
+                "State": {
+                    "Code": "16",
+                    "Name": "running"
+                },
+                "PrivateDnsName": "ip-172-31-0-43.ap-southeast-2.compute.internal",
+                "PublicDnsName": "ec2-54-206-100-211.ap-southeast-2.compute.amazonaws.com",
+                "StateTransitionReason": [],
+                "KeyName": "test-sydney",
+                "AmiLaunchIndex": "0",
+                "ProductCodes": [],
+                "InstanceType": "m1.small",
+                "LaunchTime": "2014-03-17T01:57:48.000Z",
+                "Placement": {
+                    "AvailabilityZone": "ap-southeast-2a",
+                    "GroupName": [],
+                    "Tenancy": "default"
+                },
+                "KernelId": "aki-c362fff9",
+                "Monitoring": {
+                    "State": "disabled"
+                },
+                "SubnetId": "subnet-dc7b73be",
+                "VpcId": "vpc-7c02091e",
+                "PrivateIpAddress": "172.31.0.43",
+                "PublicIpAddress": "54.206.100.211",
+                "Architecture": "x86_64",
+                "RootDeviceType": "ebs",
+                "RootDeviceName": "\/dev\/sda1",
+                "BlockDeviceMappings": [
+                    {
+                        "DeviceName": "\/dev\/sda1",
+                        "Ebs": {
+                            "VolumeId": "vol-4b873c1c",
+                            "Status": "attached",
+                            "AttachTime": "2013-12-18T05:19:12.000Z",
+                            "DeleteOnTermination": true
+                        }
+                    }
+                ],
+                "VirtualizationType": "paravirtual",
+                "ClientToken": "YuyuZ1387343949151",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SSH 443"
+                    },
+                    {
+                        "Key": "env",
+                        "Value": "prod"
+                    }
+                ],
+                "SecurityGroups": [
+                    {
+                        "GroupName": "test",
+                        "GroupId": "sg-3d1c095f"
+                    }
+                ],
+                "SourceDestCheck": true,
+                "Hypervisor": "xen",
+                "NetworkInterfaces": [
+                    {
+                        "macAddress": "02:11:f3:57:13:8e",
+                        "NetworkInterfaceId": "eni-c46a7aa6",
+                        "SubnetId": "subnet-dc7b73be",
+                        "VpcId": "vpc-7c02091e",
+                        "Description": [],
+                        "OwnerId": "362402591332",
+                        "Status": "in-use",
+                        "PrivateIpAddress": "172.31.0.43",
+                        "PrivateDnsName": "ip-172-31-0-43.ap-southeast-2.compute.internal",
+                        "SourceDestCheck": true,
+                        "Groups": [
+                            {
+                                "GroupName": "test",
+                                "GroupId": "sg-3d1c095f"
+                            }
+                        ],
+                        "Attachment": {
+                            "AttachmentId": "eni-attach-f916c7c5",
+                            "DeviceIndex": "0",
+                            "Status": "attached",
+                            "AttachTime": "2013-12-18T05:19:09.000Z",
+                            "DeleteOnTermination": true
+                        },
+                        "Association": {
+                            "PublicIp": "54.206.100.211",
+                            "PublicDnsName": "ec2-54-206-100-211.ap-southeast-2.compute.amazonaws.com",
+                            "IpOwnerId": "362402591332"
+                        },
+                        "PrivateIpAddresses": [
+                            {
+                                "PrivateIpAddress": "172.31.0.43",
+                                "PrivateDnsName": "ip-172-31-0-43.ap-southeast-2.compute.internal",
+                                "Primary": true,
+                                "Association": {
+                                    "PublicIp": "54.206.100.211",
+                                    "PublicDnsName": "ec2-54-206-100-211.ap-southeast-2.compute.amazonaws.com",
+                                    "IpOwnerId": "362402591332"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "EbsOptimized": false
+            }
+        ]
+    }
+]}

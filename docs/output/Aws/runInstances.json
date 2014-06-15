@@ -1,0 +1,82 @@
+{"requestId": "d069e47b-ac4e-43cb-a4e2-03700419f1c3", "ReservationId": "r-d6a4f9e9", "OwnerId": "362402591332", "Groups": [], "Instances": [
+    {
+        "InstanceId": "i-c8d3e3f7",
+        "ImageId": "ami-3b4bd301",
+        "State": {
+            "Code": "0",
+            "Name": "pending"
+        },
+        "PrivateDnsName": "ip-172-31-4-246.ap-southeast-2.compute.internal",
+        "PublicDnsName": [],
+        "StateTransitionReason": [],
+        "AmiLaunchIndex": "0",
+        "ProductCodes": [],
+        "InstanceType": "t1.micro",
+        "LaunchTime": "2014-06-15T06:28:51.000Z",
+        "Placement": {
+            "AvailabilityZone": "ap-southeast-2a",
+            "GroupName": [],
+            "Tenancy": "default"
+        },
+        "KernelId": "aki-c362fff9",
+        "Monitoring": {
+            "State": "disabled"
+        },
+        "SubnetId": "subnet-dc7b73be",
+        "VpcId": "vpc-7c02091e",
+        "PrivateIpAddress": "172.31.4.246",
+        "StateReason": {
+            "Code": "pending",
+            "Message": "pending"
+        },
+        "Architecture": "x86_64",
+        "RootDeviceType": "ebs",
+        "RootDeviceName": "\/dev\/sda1",
+        "BlockDeviceMappings": [],
+        "VirtualizationType": "paravirtual",
+        "ClientToken": [],
+        "SecurityGroups": [
+            {
+                "GroupName": "default",
+                "GroupId": "sg-351c0957"
+            }
+        ],
+        "SourceDestCheck": true,
+        "Hypervisor": "xen",
+        "NetworkInterfaces": [
+            {
+                "macAddress": "02:fd:7e:25:48:3e",
+                "NetworkInterfaceId": "eni-7ef72c1b",
+                "SubnetId": "subnet-dc7b73be",
+                "VpcId": "vpc-7c02091e",
+                "Description": [],
+                "OwnerId": "362402591332",
+                "Status": "in-use",
+                "PrivateIpAddress": "172.31.4.246",
+                "PrivateDnsName": "ip-172-31-4-246.ap-southeast-2.compute.internal",
+                "SourceDestCheck": true,
+                "Groups": [
+                    {
+                        "GroupName": "default",
+                        "GroupId": "sg-351c0957"
+                    }
+                ],
+                "Attachment": {
+                    "AttachmentId": "eni-attach-0bbfc337",
+                    "DeviceIndex": "0",
+                    "Status": "attaching",
+                    "AttachTime": "2014-06-15T06:28:51.000Z",
+                    "DeleteOnTermination": true
+                },
+                "PrivateIpAddresses": [
+                    {
+                        "PrivateIpAddress": "172.31.4.246",
+                        "PrivateDnsName": "ip-172-31-4-246.ap-southeast-2.compute.internal",
+                        "Primary": true
+                    }
+                ]
+            }
+        ],
+        "EbsOptimized": false
+    }
+]}

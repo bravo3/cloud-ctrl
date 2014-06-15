@@ -65,4 +65,9 @@ class InstanceCollection implements \IteratorAggregate
     {
         return count($this->items);
     }
+
+    public function toArray()
+    {
+        return $this->items;
+    }
 }

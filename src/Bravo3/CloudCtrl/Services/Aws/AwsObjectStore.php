@@ -49,7 +49,7 @@ class AwsObjectStore extends ObjectStore
             $report->setVersion($transfer['Version']);
             $report->setReceipt($transfer['RequestId']);
 
-        } catch (\Aws\S3\Exception\S3Exception $e) {
+        } catch (S3Exception $e) {
             $report->setSuccess(false);
             $report->setResultCode($e->getResponse()->getStatusCode());
             $report->setResultMessage($e->getResponse()->getMessage());
@@ -98,7 +98,7 @@ class AwsObjectStore extends ObjectStore
                 0, $e, $object->getKey());
         } catch (S3Exception $e) {
             throw new CloudCtrlException(
-                "An error occurred trying to retrieve the object",
+                "An error occurred trying to retrieve the object: ".$e->getMessage(),
                 $e->getResponse()->getStatusCode(), $e);
         }
 

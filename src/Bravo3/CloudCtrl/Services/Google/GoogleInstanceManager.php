@@ -3,6 +3,7 @@ namespace Bravo3\CloudCtrl\Services\Google;
 
 use Bravo3\Cache\CachingServiceInterface;
 use Bravo3\Cache\CachingServiceTrait;
+use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Google\GoogleInstance;
 use Bravo3\CloudCtrl\Entity\Google\GoogleInstanceFactory;
 use Bravo3\CloudCtrl\Enum\Google\Scope;
@@ -104,7 +105,7 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
      * Get a list of instances
      *
      * @param InstanceFilter $instances
-     * @throws \Bravo3\CloudCtrl\Exceptions\UnexpectedResultException
+     * @throws UnexpectedResultException
      * @return InstanceListReport
      */
     public function describeInstances(InstanceFilter $instances)
@@ -124,29 +125,27 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
             $opts['filter'] = $filter;
         }
 
-        // Google can only search a single zone at a time
-        foreach ($instances->getZoneList() as $zone) {
-            // Make the API call to Google -
-            $out = $service->instances->listInstances($credentials->getProjectId(), $zone->getZoneName(), $opts);
+        // Make the API call to Google -
+        $out = $service->instances->aggregatedList($credentials->getProjectId(), $opts);
 
-            // What we're looking for must be a list of instances -
-            if (!($out instanceof \Google_Service_Compute_InstanceList)) {
-                throw new UnexpectedResultException("Server returned an unexpected result", 0, $out);
+        // What we're looking for must be a list of instances -
+        if (!($out instanceof \Google_Service_Compute_InstanceAggregatedList)) {
+            throw new UnexpectedResultException("Server returned an unexpected result", 0, $out);
+        }
+
+        $items      = $out->getItems();
+        $collection = new InstanceCollection();
+
+        foreach ($items as $zone_items) {
+            if (!isset($zone_items['instances'])) {
+                continue;
             }
 
-            $items = isset($out->items) ? $out->getItems() : [];
-            foreach ($items as $item) {
-                // Should be an instance -
-                if (!($item instanceof \Google_Service_Compute_Instance)) {
-                    throw new UnexpectedResultException("Server returned an unexpected instance object", 0, $item);
-                }
-
-                $instance = GoogleInstance::fromGoogleServiceComputeInstance($item);
-                $report->addInstance($instance);
-            }
+            $collection->addCollection(GoogleInstance::fromGoogleApiArray($zone_items['instances']));
         }
 
         $report->setSuccess(true);
+        $report->setInstances($collection);
 
         $this->cacheAuthToken($client);
 
@@ -169,7 +168,13 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
     {
         $out = '';
 
-        return $out;
+        if ($zones = $filter->getZoneList()) {
+            foreach ($zones as $zone) {
+                //$out .= 'zone eq "'.$zone->getZoneName().'" ';
+            }
+        }
+
+        return trim($out);
     }
 
 

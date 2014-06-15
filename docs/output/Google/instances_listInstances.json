@@ -1,0 +1,11 @@
+{"canIpForward":false,
+    "creationTimestamp":"2014-06-15T01:14:05.214-07:00",
+    "description":null,
+    "id":"8715311669743477534",
+    "kind":"compute#instance",
+    "machineType":"https:\/\/www.googleapis.com\/compute\/v1\/projects\/php-cloud-controller\/zones\/us-central1-a\/machineTypes\/f1-micro",
+    "name":"i-539d55c4228d8504648661",
+    "selfLink":"https:\/\/www.googleapis.com\/compute\/v1\/projects\/php-cloud-controller\/zones\/us-central1-a\/instances\/i-539d55c4228d8504648661",
+    "status":"RUNNING",
+    "statusMessage":null,
+    "zone":"https:\/\/www.googleapis.com\/compute\/v1\/projects\/php-cloud-controller\/zones\/us-central1-a"}

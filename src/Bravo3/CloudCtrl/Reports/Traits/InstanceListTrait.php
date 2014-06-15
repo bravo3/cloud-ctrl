@@ -17,12 +17,12 @@ trait InstanceListTrait
     /**
      * Set instances as an array
      *
-     * @param InstanceInterface[] $instances
+     * @param InstanceCollection|InstanceInterface[] $instances
      * @return $this
      */
     public function setInstances($instances)
     {
-        $this->instances = $instances;
+        $this->instances = ($instances instanceof InstanceCollection) ? $instances->toArray() : $instances;
         return $this;
     }
 

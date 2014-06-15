@@ -38,7 +38,7 @@ class TestProperties
      */
     public function getAwsTestBucket()
     {
-        return 'php-cloud-controller';
+        return 'php-cloud-controller-syd';
     }
 
     // Google

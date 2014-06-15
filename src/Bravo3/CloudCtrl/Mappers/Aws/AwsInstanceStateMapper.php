@@ -4,6 +4,9 @@ namespace Bravo3\CloudCtrl\Mappers\Aws;
 use Bravo3\CloudCtrl\Enum\Aws\InstanceStateCode;
 use Bravo3\CloudCtrl\Enum\InstanceState;
 
+/**
+ * NB: AWS has no code for provisioning an instance
+ */
 class AwsInstanceStateMapper
 {
 

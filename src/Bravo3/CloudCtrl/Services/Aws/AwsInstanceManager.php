@@ -28,9 +28,7 @@ class AwsInstanceManager extends InstanceManager
     use AwsTrait;
 
     /**
-     * Create some peeps
-     *
-     * TODO: this is getting a bit chunky - break down?
+     * Create some instances
      *
      * @param int            $count
      * @param InstanceSchema $schema
@@ -148,7 +146,7 @@ class AwsInstanceManager extends InstanceManager
      * Get a list of AWS instances
      *
      * @param InstanceFilter $instances
-     * @return \Bravo3\CloudCtrl\Reports\InstanceListReport
+     * @return InstanceListReport
      */
     public function describeInstances(InstanceFilter $instances)
     {

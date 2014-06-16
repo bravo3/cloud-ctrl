@@ -4,6 +4,7 @@ namespace Bravo3\CloudCtrl\Services\Common;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
 use Bravo3\CloudCtrl\Interfaces\Instance\InstanceInterface;
 use Bravo3\CloudCtrl\Interfaces\Zone\ZoneInterface;
+use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Psr\Log\LoggerAwareInterface;
@@ -31,6 +32,12 @@ abstract class InstanceManager extends CloudServiceAwareComponent
 
     abstract public function terminateInstances(InstanceFilter $instances);
 
+    /**
+     * Get a list of instances
+     *
+     * @param InstanceFilter $instances
+     * @return InstanceListReport
+     */
     abstract public function describeInstances(InstanceFilter $instances);
 
     abstract public function setInstanceTags($tags, InstanceFilter $instances);

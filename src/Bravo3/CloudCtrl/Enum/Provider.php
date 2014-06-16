@@ -6,9 +6,11 @@ use Eloquent\Enumeration\AbstractEnumeration;
 /**
  * Cloud-hosting providers
  *
- * TODO: this list should grow - is an enumeration really right?
+ * @method static Provider AWS()
+ * @method static Provider GOOGLE()
+ * @method static Provider AZURE()
  */
-class Provider extends AbstractEnumeration
+final class Provider extends AbstractEnumeration
 {
     const AWS    = 'AWS';
     const GOOGLE = 'GOOGLE';

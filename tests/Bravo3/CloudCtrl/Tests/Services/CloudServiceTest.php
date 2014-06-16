@@ -16,7 +16,7 @@ class CloudServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testServiceFactory()
     {
-        $service = CloudService::createCloudService(Provider::AWS, new AwsCredential());
+        $service = CloudService::createCloudService(Provider::AWS(), new AwsCredential());
         $this->assertTrue($service instanceof AwsService);
         $this->assertTrue($service->getInstanceManager() instanceof InstanceManager);
     }

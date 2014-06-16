@@ -31,7 +31,7 @@ class AwsTestBase extends \PHPUnit_Framework_TestCase
             $credentials = $this->properties->getAwsCredentials();
         }
 
-        $service = CloudService::createCloudService(Provider::AWS, $credentials);
+        $service = CloudService::createCloudService(Provider::AWS(), $credentials);
         $this->assertTrue($service instanceof AwsService);
         $service->setProxy($this->properties->getProxy());
 

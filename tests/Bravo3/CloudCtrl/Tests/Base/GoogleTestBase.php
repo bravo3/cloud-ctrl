@@ -31,7 +31,7 @@ class GoogleTestBase extends \PHPUnit_Framework_TestCase
             $credentials = $this->properties->getGoogleCredentials();
         }
 
-        $service = CloudService::createCloudService(Provider::GOOGLE, $credentials);
+        $service = CloudService::createCloudService(Provider::GOOGLE(), $credentials);
         $this->assertTrue($service instanceof GoogleService);
         $service->setProxy($this->properties->getProxy());
 

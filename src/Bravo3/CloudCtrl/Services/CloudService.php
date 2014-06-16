@@ -29,7 +29,7 @@ abstract class CloudService implements LoggerAwareInterface
     /**
      * Create a new CloudService for the given provider
      *
-     * @param string                $provider
+     * @param Provider              $provider
      * @param CredentialInterface   $credentials
      * @param string                $region
      * @param NetworkProxyInterface $proxy
@@ -37,17 +37,17 @@ abstract class CloudService implements LoggerAwareInterface
      * @return CloudService
      */
     public static function createCloudService(
-        $provider,
+        Provider $provider,
         CredentialInterface $credentials,
         $region = null,
         NetworkProxyInterface $proxy = null
     ) {
         switch ($provider) {
-            case Provider::AWS:
+            case Provider::AWS():
                 return new AwsService($credentials, $region, $proxy);
-            case Provider::AZURE:
+            case Provider::AZURE():
                 return new AzureService($credentials, $region, $proxy);
-            case Provider::GOOGLE:
+            case Provider::GOOGLE():
                 return new GoogleService($credentials, $region, $proxy);
 
             default:

@@ -12,6 +12,7 @@ use Bravo3\CloudCtrl\Exceptions\UnexpectedResultException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
 use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
+use Bravo3\CloudCtrl\Reports\SuccessReport;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
 use Bravo3\CloudCtrl\Services\Common\UniqueInstanceNameGenerator;
@@ -80,21 +81,45 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         return $report;
     }
 
+    /**
+     * Start a set of stopped instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function startInstances(InstanceFilter $instances)
     {
         // TODO: Implement startInstances() method.
     }
 
+    /**
+     * Stop a set of running instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function stopInstances(InstanceFilter $instances)
     {
         // TODO: Implement stopInstances() method.
     }
 
+    /**
+     * Terminate a set of instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function terminateInstances(InstanceFilter $instances)
     {
         // TODO: Implement terminateInstances() method.
     }
 
+    /**
+     * Restart a set of instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function restartInstances(InstanceFilter $instances)
     {
         // TODO: Implement restartInstances() method.
@@ -152,7 +177,14 @@ class GoogleInstanceManager extends InstanceManager implements CachingServiceInt
         return $report;
     }
 
-    public function setInstanceTags($tags, InstanceFilter $instances)
+    /**
+     * Set tags for a set of instances
+     *
+     * @param array          $tags
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
+    public function setInstanceTags(array $tags, InstanceFilter $instances)
     {
         // TODO: Implement setInstanceTags() method.
     }

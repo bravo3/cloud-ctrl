@@ -8,7 +8,7 @@ use Eloquent\Enumeration\AbstractEnumeration;
  * @method static Architecture I64()
  * @method static Architecture I386()
  */
-class Architecture extends AbstractEnumeration
+final class Architecture extends AbstractEnumeration
 {
     const X86_64 = 'x86_64';
     const I64    = 'I64';

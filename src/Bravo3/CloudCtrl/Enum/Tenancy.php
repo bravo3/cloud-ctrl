@@ -8,7 +8,7 @@ use Eloquent\Enumeration\AbstractEnumeration;
  *
  * Allow for unknown tenancies
  */
-class Tenancy extends AbstractEnumeration
+final class Tenancy extends AbstractEnumeration
 {
     const VPC       = 'VPC';
     const DEDICATED = 'DEDICATED';

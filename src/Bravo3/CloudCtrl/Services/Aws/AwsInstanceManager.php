@@ -6,13 +6,19 @@ use Aws\Ec2\Exception\Ec2Exception;
 use Bravo3\CloudCtrl\Collections\InstanceCollection;
 use Bravo3\CloudCtrl\Entity\Aws\AwsInstance;
 use Bravo3\CloudCtrl\Entity\Common\Zone;
+use Bravo3\CloudCtrl\Enum\Aws\VolumeType;
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
+use Bravo3\CloudCtrl\Exceptions\SchemaException;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
+use Bravo3\CloudCtrl\Reports\ImageCreateReport;
 use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
+use Bravo3\CloudCtrl\Reports\SuccessReport;
+use Bravo3\CloudCtrl\Schema\ImageSchema;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
+use Psr\Log\LoggerInterface;
 
 /**
  * Amazon Web Services instance manager for EC2
@@ -24,7 +30,8 @@ class AwsInstanceManager extends InstanceManager
     const DRY_RUN_STATUS  = 412;
     const DRY_RUN_ERR     = "Request would have succeeded, but DryRun flag is set.";
     const DRY_RUN_RECEIPT = "dry-run-only";
-
+    const DEFAULT_IOPS    = 300;
+    
     use AwsTrait;
 
     /**
@@ -122,21 +129,45 @@ class AwsInstanceManager extends InstanceManager
         return $report;
     }
 
+    /**
+     * Start a set of stopped instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function startInstances(InstanceFilter $instances)
     {
         // TODO: Implement startInstances() method.
     }
 
+    /**
+     * Stop a set of running instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function stopInstances(InstanceFilter $instances)
     {
         // TODO: Implement stopInstances() method.
     }
 
+    /**
+     * Terminate a set of instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function terminateInstances(InstanceFilter $instances)
     {
         // TODO: Implement terminateInstances() method.
     }
 
+    /**
+     * Restart a set of instances
+     *
+     * @param InstanceFilter $instances
+     * @return SuccessReport
+     */
     public function restartInstances(InstanceFilter $instances)
     {
         // TODO: Implement restartInstances() method.
@@ -151,8 +182,8 @@ class AwsInstanceManager extends InstanceManager
     public function describeInstances(InstanceFilter $instances)
     {
         /** @var $ec2 Ec2Client */
-        $ec2 = $this->getService('ec2');
-        $report  = new InstanceListReport();
+        $ec2    = $this->getService('ec2');
+        $report = new InstanceListReport();
 
         $filters = [];
 
@@ -223,7 +254,7 @@ class AwsInstanceManager extends InstanceManager
      * @param array          $tags Associative array of tags
      * @param InstanceFilter $instances
      */
-    public function setInstanceTags($tags, InstanceFilter $instances)
+    public function setInstanceTags(array $tags, InstanceFilter $instances)
     {
         /** @var $ec2 Ec2Client */
         $ec2 = $this->getService('ec2');
@@ -240,6 +271,66 @@ class AwsInstanceManager extends InstanceManager
                 'Tags'      => $tags
             ]
         );
+    }
+
+
+    /**
+     * Start the process of saving a machine image
+     *
+     * @param string      $instance_id
+     * @param ImageSchema $image_schema
+     * @return ImageCreateReport
+     */
+    public function saveImage($instance_id, ImageSchema $image_schema)
+    {
+        /** @var $ec2 Ec2Client */
+        $ec2 = $this->getService('ec2');
+
+        $volumes = [];
+        foreach ($image_schema->getStorageDevices() as $volume) {
+            if ($volume->getIops()) {
+                $ebs['Iops'] = $volume->getIops();
+            } elseif ($volume->getVolumeType() == VolumeType::PROVISIONED_IO) {
+                throw new SchemaException("Provisioned IOPS devices require an IOPS value");
+            }
+
+            $volume_schema = [
+                'VirtualName' => $volume->getVirtualName(),
+                'DeviceName'  => $volume->getDeviceName(),
+                //'NoDevice' => 'string',
+            ];
+
+            if ($volume->getVolumeType() != VolumeType::EPHEMERAL) {
+                $volume_schema['Ebs'] = [
+                    'DeleteOnTermination' => $volume->getDeleteOnTermination(),
+                    'VolumeType'          => $volume->getVolumeType() ? : VolumeType::STANDARD,
+                    'Encrypted'           => $volume->getEncrypted(),
+                    'VolumeSize'          => $volume->getVolumeSizeGb(),
+                    'SnapshotId'          => $volume->getSnapshotId(),
+                ];
+            }
+
+            $volumes[] = $volume_schema;
+        }
+
+        // Make the API call
+        $ec2->createImage(
+            [
+                'DryRun'              => $this->getDryMode(),
+                'InstanceId'          => $instance_id,
+                'Name'                => $image_schema->getImageName(),
+                'Description'         => $image_schema->getImageDescription(),
+                'NoReboot'            => !$image_schema->getAllowReboot(),
+                'BlockDeviceMappings' => $volumes,
+            ]
+        );
+
+        // Prepare report
+        $report = new ImageCreateReport();
+
+        // ..
+
+        return $report;
     }
 
 

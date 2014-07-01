@@ -2,6 +2,7 @@
 namespace Bravo3\CloudCtrl\Services\Aws;
 
 use Aws\Common\Aws;
+use Bravo3\CloudCtrl\Services\CloudService;
 use Bravo3\NetworkProxy\Implementation\HttpProxy;
 use Bravo3\NetworkProxy\Implementation\SocksProxy;
 
@@ -43,7 +44,7 @@ trait AwsTrait
      */
     protected function createAwsService()
     {
-        /** @var $cloud_service \Bravo3\CloudCtrl\Services\CloudService */
+        /** @var $cloud_service CloudService */
         $cloud_service = $this->getCloudService();
 
         $config = [

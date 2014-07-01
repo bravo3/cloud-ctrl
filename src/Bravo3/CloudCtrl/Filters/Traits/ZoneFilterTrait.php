@@ -12,7 +12,7 @@ trait ZoneFilterTrait
     /**
      * @var ZoneInterface[]
      */
-    protected $zoneList = [];
+    protected $zone_list = [];
 
     /**
      * Set zones
@@ -22,7 +22,7 @@ trait ZoneFilterTrait
      */
     public function setZoneList($zones)
     {
-        $this->zoneList = $zones;
+        $this->zone_list = $zones;
         return $this;
     }
 
@@ -33,7 +33,7 @@ trait ZoneFilterTrait
      */
     public function getZoneList()
     {
-        return $this->zoneList;
+        return $this->zone_list;
     }
 
     /**
@@ -44,7 +44,7 @@ trait ZoneFilterTrait
      */
     public function addZone(ZoneInterface $zone)
     {
-        $this->zoneList[] = $zone;
+        $this->zone_list[] = $zone;
         return $this;
     }
 

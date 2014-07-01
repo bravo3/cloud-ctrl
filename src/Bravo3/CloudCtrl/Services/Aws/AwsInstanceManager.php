@@ -4,21 +4,26 @@ namespace Bravo3\CloudCtrl\Services\Aws;
 use Aws\Ec2\Ec2Client;
 use Aws\Ec2\Exception\Ec2Exception;
 use Bravo3\CloudCtrl\Collections\InstanceCollection;
+use Bravo3\CloudCtrl\Entity\Aws\AwsImage;
 use Bravo3\CloudCtrl\Entity\Aws\AwsInstance;
 use Bravo3\CloudCtrl\Entity\Common\Zone;
 use Bravo3\CloudCtrl\Enum\Aws\VolumeType;
 use Bravo3\CloudCtrl\Enum\Tenancy;
 use Bravo3\CloudCtrl\Exceptions\InvalidValueException;
 use Bravo3\CloudCtrl\Exceptions\SchemaException;
+use Bravo3\CloudCtrl\Filters\IdFilter;
+use Bravo3\CloudCtrl\Filters\ImageFilter;
 use Bravo3\CloudCtrl\Filters\InstanceFilter;
 use Bravo3\CloudCtrl\Reports\ImageCreateReport;
+use Bravo3\CloudCtrl\Reports\ImageListReport;
 use Bravo3\CloudCtrl\Reports\InstanceListReport;
 use Bravo3\CloudCtrl\Reports\InstanceProvisionReport;
 use Bravo3\CloudCtrl\Reports\SuccessReport;
 use Bravo3\CloudCtrl\Schema\ImageSchema;
 use Bravo3\CloudCtrl\Schema\InstanceSchema;
+use Bravo3\CloudCtrl\Services\CloudService;
 use Bravo3\CloudCtrl\Services\Common\InstanceManager;
-use Psr\Log\LoggerInterface;
+use Guzzle\Service\Resource\Model;
 
 /**
  * Amazon Web Services instance manager for EC2
@@ -31,8 +36,31 @@ class AwsInstanceManager extends InstanceManager
     const DRY_RUN_ERR     = "Request would have succeeded, but DryRun flag is set.";
     const DRY_RUN_RECEIPT = "dry-run-only";
     const DEFAULT_IOPS    = 300;
-    
+
     use AwsTrait;
+
+    protected $genericSuccessFn;
+    protected $genericFailFn;
+
+    function __construct(CloudService $cloud_service)
+    {
+        parent::__construct($cloud_service);
+
+        // Create a generic success/fail function for calls that should just return a SuccessReport
+        // These functions are used by #ec2ApiCall() to streamline the API call process
+        $this->genericSuccessFn = function (Model $m) {
+            $report = new SuccessReport();
+            $report->setSuccess(true);
+            return $report;
+        };
+        $this->genericFailFn    = function (Ec2Exception $e) {
+            $report = new SuccessReport();
+            $report->setSuccess(false);
+            $report->setResultCode($e->getResponse()->getStatusCode());
+            $report->setResultMessage($e->getResponse()->getMessage());
+            return $report;
+        };
+    }
 
     /**
      * Create some instances
@@ -132,45 +160,83 @@ class AwsInstanceManager extends InstanceManager
     /**
      * Start a set of stopped instances
      *
-     * @param InstanceFilter $instances
+     * @param IdFilter $instances
      * @return SuccessReport
      */
-    public function startInstances(InstanceFilter $instances)
+    public function startInstances(IdFilter $instances)
     {
-        // TODO: Implement startInstances() method.
+        // Make the API call
+        return $this->ec2ApiCall(
+            'startInstances',
+            [
+                'DryRun'      => $this->getDryMode(),
+                'InstanceIds' => $instances->getIdList(),
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
+        );
     }
 
     /**
      * Stop a set of running instances
      *
-     * @param InstanceFilter $instances
+     * @param IdFilter $instances
+     * @param bool     $force
      * @return SuccessReport
      */
-    public function stopInstances(InstanceFilter $instances)
+    public function stopInstances(IdFilter $instances, $force = false)
     {
-        // TODO: Implement stopInstances() method.
+        // Make the API call
+        return $this->ec2ApiCall(
+            'stopInstances',
+            [
+                'DryRun'      => $this->getDryMode(),
+                'InstanceIds' => $instances->getIdList(),
+                'Force'       => $force,
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
+        );
     }
 
     /**
      * Terminate a set of instances
      *
-     * @param InstanceFilter $instances
+     * @param IdFilter $instances
      * @return SuccessReport
      */
-    public function terminateInstances(InstanceFilter $instances)
+    public function terminateInstances(IdFilter $instances)
     {
-        // TODO: Implement terminateInstances() method.
+        // Make the API call
+        return $this->ec2ApiCall(
+            'terminateInstances',
+            [
+                'DryRun'      => $this->getDryMode(),
+                'InstanceIds' => $instances->getIdList(),
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
+        );
     }
 
     /**
      * Restart a set of instances
      *
-     * @param InstanceFilter $instances
+     * @param IdFilter $instances
      * @return SuccessReport
      */
-    public function restartInstances(InstanceFilter $instances)
+    public function restartInstances(IdFilter $instances)
     {
-        // TODO: Implement restartInstances() method.
+        // Make the API call
+        return $this->ec2ApiCall(
+            'rebootInstances',
+            [
+                'DryRun'      => $this->getDryMode(),
+                'InstanceIds' => $instances->getIdList(),
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
+        );
     }
 
     /**
@@ -253,23 +319,25 @@ class AwsInstanceManager extends InstanceManager
      *
      * @param array          $tags Associative array of tags
      * @param InstanceFilter $instances
+     * @return SuccessReport
      */
     public function setInstanceTags(array $tags, InstanceFilter $instances)
     {
-        /** @var $ec2 Ec2Client */
-        $ec2 = $this->getService('ec2');
-
         $tags = [];
         foreach ($tags as $key => $value) {
             $tags[] = ['Key' => $key, 'Value' => $value];
         }
 
-        $ec2->createTags(
+        // Make the API call
+        $this->ec2ApiCall(
+            'createTags',
             [
                 'DryRun'    => $this->getDryMode(),
                 'Resources' => $instances->getIdList(),
                 'Tags'      => $tags
-            ]
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
         );
     }
 
@@ -280,12 +348,10 @@ class AwsInstanceManager extends InstanceManager
      * @param string      $instance_id
      * @param ImageSchema $image_schema
      * @return ImageCreateReport
+     * @throws SchemaException
      */
-    public function saveImage($instance_id, ImageSchema $image_schema)
+    public function createImage($instance_id, ImageSchema $image_schema)
     {
-        /** @var $ec2 Ec2Client */
-        $ec2 = $this->getService('ec2');
-
         $volumes = [];
         foreach ($image_schema->getStorageDevices() as $volume) {
             if ($volume->getIops()) {
@@ -314,7 +380,8 @@ class AwsInstanceManager extends InstanceManager
         }
 
         // Make the API call
-        $ec2->createImage(
+        $report = $this->ec2ApiCall(
+            'createImage',
             [
                 'DryRun'              => $this->getDryMode(),
                 'InstanceId'          => $instance_id,
@@ -322,15 +389,112 @@ class AwsInstanceManager extends InstanceManager
                 'Description'         => $image_schema->getImageDescription(),
                 'NoReboot'            => !$image_schema->getAllowReboot(),
                 'BlockDeviceMappings' => $volumes,
-            ]
+            ],
+            function (Model $r) {
+                $report = new ImageCreateReport();
+                $report->setSuccess(true);
+                $report->setImageId($r->get('ImageId'));
+                return $report;
+            },
+            function (Ec2Exception $e) {
+                $report = new ImageCreateReport();
+                $report->setSuccess(false);
+                $report->setResultCode($e->getResponse()->getStatusCode());
+                $report->setResultMessage($e->getResponse()->getMessage());
+                return $report;
+            }
         );
 
-        // Prepare report
-        $report = new ImageCreateReport();
+        return $report;
+    }
 
-        // ..
+
+    /**
+     * Deregister a machine image allowing for the provider to delete when appropriate
+     *
+     * @param string $image_id
+     * @return SuccessReport
+     */
+    public function deregisterImage($image_id)
+    {
+        // Make the API call
+        return $this->ec2ApiCall(
+            'deregisterImage',
+            [
+                'DryRun'  => $this->getDryMode(),
+                'ImageId' => $image_id
+            ],
+            $this->genericSuccessFn,
+            $this->genericFailFn
+        );
+    }
+
+    /**
+     * Deregister a machine image allowing for the provider to delete when appropriate
+     *
+     * @param ImageFilter $images
+     * @return ImageListReport
+     */
+    public function describeImages(ImageFilter $images)
+    {
+        $filters = [];
+
+        // Tags
+        foreach ($images->getTags() as $key => $value) {
+            $filters[] = [
+                'Name'   => 'tag:'.$key,
+                'Values' => (array)$value
+            ];
+        }
+
+        // Make the API call
+        $report = $this->ec2ApiCall(
+            'describeImages',
+            [
+                'DryRun'   => $this->getDryMode(),
+                'ImageIds' => $images->getIdList(),
+                'Owners'   => $images->getOwners(),
+                'Filters'  => $filters,
+            ],
+            function (Model $r) {
+                $report = new ImageListReport();
+                $report->setSuccess(true);
+                $report->setImages(AwsImage::fromApiResult($r));
+                return $report;
+            },
+            function (Ec2Exception $e) {
+                $report = new ImageListReport();
+                $report->setSuccess(false);
+                $report->setResultCode($e->getResponse()->getStatusCode());
+                $report->setResultMessage($e->getResponse()->getMessage());
+                return $report;
+            }
+        );
 
         return $report;
+    }
+
+    /**
+     * Make an EC2 API call, catching normal error responses
+     *
+     * The return value of this function will be the return value of the success/fail closure provided.
+     *
+     * @param string   $fn
+     * @param array    $params
+     * @param \Closure $success
+     * @param \Closure $fail
+     * @return mixed
+     */
+    protected function ec2ApiCall($fn, array $params, \Closure $success, \Closure $fail)
+    {
+        /** @var $ec2 Ec2Client */
+        $ec2 = $this->getService('ec2');
+
+        try {
+            return $success($ec2->$fn($params));
+        } catch (Ec2Exception $e) {
+            return $fail($e);
+        }
     }
 
 

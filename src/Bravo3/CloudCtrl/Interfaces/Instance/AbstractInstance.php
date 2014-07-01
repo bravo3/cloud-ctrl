@@ -44,7 +44,7 @@ abstract class AbstractInstance implements InstanceInterface
     protected $private_address;
 
     /**
-     * @var string
+     * @var Architecture
      */
     protected $architecture;
 
@@ -283,6 +283,19 @@ abstract class AbstractInstance implements InstanceInterface
     {
         $this->tags[$key] = $value;
     }
+
+    /**
+     * Remove a tag
+     *
+     * @param string $key
+     */
+    public function removeTag($key)
+    {
+        if (array_key_exists($key, $this->tags)) {
+            unset($this->tags[$key]);
+        }
+    }
+
 
 }
  

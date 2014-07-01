@@ -1,7 +1,6 @@
 <?php
 namespace Bravo3\CloudCtrl\Collections;
 
-
 use Bravo3\CloudCtrl\Interfaces\Common\ImageInterface;
 
 class ImageCollection implements \IteratorAggregate
@@ -27,11 +26,11 @@ class ImageCollection implements \IteratorAggregate
     /**
      * Add an instance to the collection
      *
-     * @param ImageInterface $instance
+     * @param ImageInterface $image
      */
-    public function addInstance(ImageInterface $instance)
+    public function addImage(ImageInterface $image)
     {
-        $this->items[] = $instance;
+        $this->items[] = $image;
     }
 
     /**
@@ -47,15 +46,31 @@ class ImageCollection implements \IteratorAggregate
     }
 
     /**
-     * Get an instance by its ID
+     * Get an image by its ID
      *
-     * @param $id
+     * @param string $id
      * @return ImageInterface|null
      */
     public function getImageById($id)
     {
         foreach ($this->items as $instance) {
             if ($instance->getImageId() == $id) {
+                return $instance;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get an image by its name
+     *
+     * @param string $name
+     * @return ImageInterface|null
+     */
+    public function getImageByName($name)
+    {
+        foreach ($this->items as $instance) {
+            if ($instance->getName() == $name) {
                 return $instance;
             }
         }

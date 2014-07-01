@@ -48,7 +48,7 @@ class InstanceCollection implements \IteratorAggregate
     /**
      * Get an instance by its ID
      *
-     * @param $id
+     * @param string $id
      * @return InstanceInterface|null
      */
     public function getInstanceById($id)

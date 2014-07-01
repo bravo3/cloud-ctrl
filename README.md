@@ -12,7 +12,7 @@ and Windows Azure from a common interface. The end result of this is that you co
 infrastructure integration simply by changing a provider name.
 
 This library should cover all common components including compute resource (EC2, Google Cloud Compute, etc), load
-balancing and object storage. Included in this should be all VPC, network, firewall, IP allocation and disk managment.
+balancing and object storage. Included in this should be all VPC, network, firewall, IP allocation and disk management.
 
 
 What Is Working
@@ -23,6 +23,8 @@ Amazon Web Services
 
 ### Instance Manager
 * Create EC2 instances in multiple zones
+* Start, stop, restart, terminate instances
+* Save, describe & delete images (AMIs)
 
 ### Object Store
 * Put object
@@ -42,4 +44,5 @@ Windows Azure
 -------------
 
 Planned.
+
 

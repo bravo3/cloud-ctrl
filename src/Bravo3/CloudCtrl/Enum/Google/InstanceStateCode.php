@@ -11,7 +11,7 @@ use Eloquent\Enumeration\AbstractEnumeration;
  * @method static InstanceStateCode STOPPING()
  * @method static InstanceStateCode TERMINATED()
  */
-class InstanceStateCode extends AbstractEnumeration
+final class InstanceStateCode extends AbstractEnumeration
 {
     const PROVISIONING = 'PROVISIONING';
     const RUNNING      = 'RUNNING';

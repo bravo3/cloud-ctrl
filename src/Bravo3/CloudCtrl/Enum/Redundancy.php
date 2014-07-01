@@ -7,9 +7,9 @@ use Eloquent\Enumeration\AbstractEnumeration;
  * @method static Redundancy STANDARD()
  * @method static Redundancy REDUCED()
  */
-class Redundancy extends AbstractEnumeration
+final class Redundancy extends AbstractEnumeration
 {
     const STANDARD = 'STANDARD';
-    const REDUCED = 'REDUCED';
+    const REDUCED  = 'REDUCED';
 }
  

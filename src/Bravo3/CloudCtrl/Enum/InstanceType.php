@@ -8,7 +8,7 @@ use Eloquent\Enumeration\AbstractEnumeration;
  *
  * Not final - you should allow for unknown instance types
  */
-class InstanceType extends AbstractEnumeration
+final class InstanceType extends AbstractEnumeration
 {
     const ONDEMAND = 'ONDEMAND';
     const SPOT     = 'SPOT';

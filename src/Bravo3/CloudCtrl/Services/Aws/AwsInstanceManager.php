@@ -93,17 +93,11 @@ class AwsInstanceManager extends InstanceManager
         $zone_count     = count($zones);
         $single_request = $zone_count == 1;
 
-        // If we have multiple zones, we need to do this 1 at a time to break up the requests
+        // If we have multiple zones/subnets, we need to do this 1 at a time to break up the requests
         // If not, AWS can spawn them all at once
         for ($i = 0; $i < ($single_request ? 1 : $count); $i++) {
             // Placement
             $placement = ['Tenancy' => $tenancy];
-            if ($zone_count) {
-                $zone                          = $zones[$i % $zone_count];
-                $placement['AvailabilityZone'] = $zone->getZoneName();
-            } else {
-                $zone = null;
-            }
 
             // API params
             $params = [
@@ -117,6 +111,11 @@ class AwsInstanceManager extends InstanceManager
                 'InstanceType'     => $schema->getInstanceSize(),
                 'Placement'        => $placement,
             ];
+
+            if ($zone_count) {
+                $zone               = $zones[$i % $zone_count];
+                $params['SubnetId'] = $zone->getZoneName();
+            }
 
             try {
                 // Run the request
@@ -499,4 +498,3 @@ class AwsInstanceManager extends InstanceManager
 
 
 }
- 
